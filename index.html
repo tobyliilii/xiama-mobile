@@ -173,16 +173,26 @@
   h1{ font-size:20px; }
   .card{ padding:14px; margin:12px 0; }
 
-  /* 手機：row 直排 */
+  /* 手機：全部直排（避免桌機 grid 把內容推到底） */
   .row{
     display:flex;
     flex-direction:column;
     gap:10px;
+    align-items:stretch;
   }
 
   .row > div{
     width:100%;
     margin:0;
+    /* 關鍵：不要在手機把內容往下推 */
+    justify-content:flex-start;
+  }
+
+  /* namesRow 本身也是 row：在手機要確保它是正常的 column，而不是 display:contents */
+  #namesRow{
+    display:flex !important;
+    flex-direction:column;
+    gap:10px;
   }
 
   input[type="number"],
@@ -201,26 +211,6 @@
   .stepper{ width:100%; }
   .stepper input{ flex:1; width:auto; }
   .stepper button{ width:44px; }
-}
-
-   /* 桌機：玩家名字 + 重置牌局 同一列 */
-@media (min-width: 900px){
-  /* 直接鎖定包著 namesRow 的那個 .row */
-  .row:has(#namesRow){
-    display:grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
-    gap:16px;
-    align-items:end;
-  }
-
-  #namesRow{
-    display:contents;
-  }
-
-  #resetBtn{
-    height:44px;
-    white-space:nowrap;
-  }
 }
 
     button, select, input{ touch-action: manipulation; }
