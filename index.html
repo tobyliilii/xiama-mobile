@@ -212,6 +212,29 @@
   .stepper input{ flex:1; width:auto; }
   .stepper button{ width:44px; }
 }
+    
+/* 手機：不要讓「玩家設定卡」撐出大空白，把高度交給內容 */
+@media (max-width: 520px){
+  /* 如果你第一張卡有 playerCard 這個 class */
+  .playerCard{
+    min-height: unset !important;
+    height: auto !important;
+    display: block !important;
+  }
+
+  /* 保險：如果 playerCard 沒命中，就用 has(#namesRow) 命中那張卡 */
+  .card:has(#namesRow){
+    min-height: unset !important;
+    height: auto !important;
+    display: block !important;
+  }
+
+  /* 再保險：避免 flex 把 resetBtn 推到底 */
+  .card:has(#namesRow) .row{
+    justify-content: flex-start !important;
+    align-content: flex-start !important;
+  }
+}
 
     button, select, input{ touch-action: manipulation; }
   </style>
