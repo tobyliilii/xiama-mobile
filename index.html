@@ -135,100 +135,70 @@
 
     /* ---- Player header (Desktop: names + reset in ONE row) ---- */
     .namesHeader{
-      display:grid;
-      grid-template-columns: 1fr auto;
-      gap:12px;
-      align-items:end;
-    }
-    .namesGrid{
-      display:grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap:12px;
-    }
-    .namesGrid > div{ min-width:0; }
-    .resetWrap{
-      display:flex;
-      flex-direction:column;
-      justify-content:flex-end;
-      min-width: 140px;
-    }
+  display:grid;
+  grid-template-columns: 1fr auto;
+  gap:12px;
+  align-items:end;
+}
 
-    /* Stepper */
-    .stepper{
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-    .stepper button,
-    .stepper input{
-      height:44px;
-    }
-    .stepper button{
-      width:44px;
-      padding:0;
-      line-height:44px;
-      font-size:20px;
-      font-weight:900;
-      border-radius:12px;
-    }
-    .stepper input{
-      width:56px;
-      padding:0;
-      text-align:center;
-      font-size:18px;
-      font-weight:900;
-      font-variant-numeric: tabular-nums;
-    }
+/* 名字區：4格 + 明確的 gap（加 !important 防被蓋） */
+#namesRow.namesGrid{
+  display:grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap:12px !important;              /* ⭐ 強制分開 */
+  align-items:stretch;
+}
 
-    /* ---- Mobile ---- */
-    @media (max-width: 520px){
-      .app{ padding:14px 12px 18px; }
-      h1{ font-size:20px; }
-      .card{ padding:14px; margin:12px 0; }
+/* 每一格（你 JS 塞進去的 div） */
+#namesRow.namesGrid > div{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
 
-      /* 玩家區：手機直排，且高度隨內容（避免大空白） */
-      .namesHeader{
-        grid-template-columns: 1fr;
-        align-items:stretch;
-      }
-      .namesGrid{
-        grid-template-columns: 1fr;
-      }
-      .resetWrap{
-        min-width: 0;
-      }
+/* ⭐ 讓「框」真的像框：無論你裡面是 input 或 div，都會變成卡片 */
+#namesRow.namesGrid input,
+#namesRow.namesGrid .nameBox,
+#namesRow.namesGrid .box{
+  width:100%;
+  background:#0b1220;
+  border:1px solid #334155;
+  border-radius:16px;
+  padding:16px 14px;
+  color:#fff;
+  box-shadow: 0 8px 24px rgba(0,0,0,.35); /* 分離感 */
+  box-sizing:border-box;
+}
 
-      /* 其他表單：手機直排 */
-      .row{
-        display:flex;
-        flex-direction:column;
-        gap:10px;
-        align-items:stretch;
-      }
-      .row > div{
-        width:100%;
-        margin:0;
-        justify-content:flex-start;
-      }
+/* 重置按鈕那塊 */
+.resetWrap{
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  min-width:140px;
+}
 
-      input[type="number"],
-      input[type="text"],
-      select,
-      button{
-        width:100%;
-      }
+/* 手機：2x2 + 按鈕滿寬（你原本是 1fr 會變成超長一條） */
+@media (max-width:520px){
+  .namesHeader{
+    grid-template-columns: 1fr;
+    align-items:stretch;
+  }
 
-      table{
-        display:block;
-        overflow:auto;
-        -webkit-overflow-scrolling:touch;
-      }
+  #namesRow.namesGrid{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap:12px !important;
+  }
 
-      .stepper{ width:100%; }
-      .stepper input{ flex:1; width:auto; }
-      .stepper button{ width:44px; }
-    }
+  .resetWrap{
+    min-width:0;
+  }
 
+  #resetBtn{
+    width:100%;
+  }
+}
     button, select, input{ touch-action: manipulation; }
   </style>
 </head>
@@ -237,15 +207,15 @@
   <div class="app">
     <h1>說吧!今天誰天胡🀄️</h1>
 
-    <div class="card">
-      <div class="namesHeader">
-        <div id="namesRow" class="namesGrid"></div>
-        <div class="resetWrap">
-          <label>&nbsp;</label>
-          <button id="resetBtn">重置牌局</button>
-        </div>
-      </div>
-    </div>
+   <div class="card">
+  <div class="namesHeader">
+    <div id="namesRow" class="namesGrid"></div>
+
+    <button id="resetBtn" class="resetBtn">
+      重置牌局
+    </button>
+  </div>
+</div>
 
     <div class="card">
       <div class="row formRow">
