@@ -221,6 +221,33 @@
   }
 }
 
+    /* ===============================
+   Desktop：水(stepper)數字框固定寬
+   =============================== */
+
+/* 覆蓋全域 input[type="number"] width:160px */
+.stepper{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+/* 水的數字 input：桌機固定小尺寸 */
+.stepper input[type="number"]{
+  width:52px !important;   /* 可改 52 / 56 / 60 */
+  min-width:52px;
+  max-width:52px;
+  flex:0 0 auto;
+  text-align:center;
+}
+
+/* + / - 按鈕桌機維持方形 */
+.stepper button{
+  width:44px;
+  height:44px;
+  flex:0 0 auto;
+}
+
     button, select, input{ touch-action: manipulation; }
   </style>
 </head>
