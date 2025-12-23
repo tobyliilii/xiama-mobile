@@ -49,16 +49,8 @@
       box-shadow: var(--shadow);
     }
 
+    /* general form row */
     .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-
-    .namesGrid{
-      display:grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap:12px;
-      flex:1 1 560px;
-    }
-    .namesGrid > div{ min-width:0; }
-
     .row > div{
       display:flex;
       flex-direction:column;
@@ -141,6 +133,26 @@
 
     .formRow{ align-items:flex-end; }
 
+    /* ---- Player header (Desktop: names + reset in ONE row) ---- */
+    .namesHeader{
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap:12px;
+      align-items:end;
+    }
+    .namesGrid{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap:12px;
+    }
+    .namesGrid > div{ min-width:0; }
+    .resetWrap{
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+      min-width: 140px;
+    }
+
     /* Stepper */
     .stepper{
       display:flex;
@@ -168,73 +180,54 @@
       font-variant-numeric: tabular-nums;
     }
 
+    /* ---- Mobile ---- */
     @media (max-width: 520px){
-  .app{ padding:14px 12px 18px; }
-  h1{ font-size:20px; }
-  .card{ padding:14px; margin:12px 0; }
+      .app{ padding:14px 12px 18px; }
+      h1{ font-size:20px; }
+      .card{ padding:14px; margin:12px 0; }
 
-  /* 手機：全部直排（避免桌機 grid 把內容推到底） */
-  .row{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    align-items:stretch;
-  }
+      /* 玩家區：手機直排，且高度隨內容（避免大空白） */
+      .namesHeader{
+        grid-template-columns: 1fr;
+        align-items:stretch;
+      }
+      .namesGrid{
+        grid-template-columns: 1fr;
+      }
+      .resetWrap{
+        min-width: 0;
+      }
 
-  .row > div{
-    width:100%;
-    margin:0;
-    /* 關鍵：不要在手機把內容往下推 */
-    justify-content:flex-start;
-  }
+      /* 其他表單：手機直排 */
+      .row{
+        display:flex;
+        flex-direction:column;
+        gap:10px;
+        align-items:stretch;
+      }
+      .row > div{
+        width:100%;
+        margin:0;
+        justify-content:flex-start;
+      }
 
-  /* namesRow 本身也是 row：在手機要確保它是正常的 column，而不是 display:contents */
-  #namesRow{
-    display:flex !important;
-    flex-direction:column;
-    gap:10px;
-  }
+      input[type="number"],
+      input[type="text"],
+      select,
+      button{
+        width:100%;
+      }
 
-  input[type="number"],
-  input[type="text"],
-  select,
-  button{
-    width:100%;
-  }
+      table{
+        display:block;
+        overflow:auto;
+        -webkit-overflow-scrolling:touch;
+      }
 
-  table{
-    display:block;
-    overflow:auto;
-    -webkit-overflow-scrolling:touch;
-  }
-
-  .stepper{ width:100%; }
-  .stepper input{ flex:1; width:auto; }
-  .stepper button{ width:44px; }
-}
-    
-/* 手機：不要讓「玩家設定卡」撐出大空白，把高度交給內容 */
-@media (max-width: 520px){
-  /* 如果你第一張卡有 playerCard 這個 class */
-  .playerCard{
-    min-height: unset !important;
-    height: auto !important;
-    display: block !important;
-  }
-
-  /* 保險：如果 playerCard 沒命中，就用 has(#namesRow) 命中那張卡 */
-  .card:has(#namesRow){
-    min-height: unset !important;
-    height: auto !important;
-    display: block !important;
-  }
-
-  /* 再保險：避免 flex 把 resetBtn 推到底 */
-  .card:has(#namesRow) .row{
-    justify-content: flex-start !important;
-    align-content: flex-start !important;
-  }
-}
+      .stepper{ width:100%; }
+      .stepper input{ flex:1; width:auto; }
+      .stepper button{ width:44px; }
+    }
 
     button, select, input{ touch-action: manipulation; }
   </style>
@@ -245,17 +238,12 @@
     <h1>說吧!今天誰天胡🀄️</h1>
 
     <div class="card">
-      <div class="row">
+      <div class="namesHeader">
         <div id="namesRow" class="namesGrid"></div>
-
-
-        <div>
+        <div class="resetWrap">
           <label>&nbsp;</label>
           <button id="resetBtn">重置牌局</button>
         </div>
-      </div>
-
-      <div class="muted" style="margin-top:10px;">
       </div>
     </div>
 
@@ -313,9 +301,6 @@
           <button id="addRoundBtn">記錄本局</button>
         </div>
       </div>
-
-      <div class="muted" style="margin-top:10px;">
-      </div>
     </div>
 
     <div class="card">
@@ -333,7 +318,6 @@
       <div id="transfersArea"></div>
     </div>
   </div>
-
 
 <script>
   const $ = (id) => document.getElementById(id);
@@ -387,7 +371,7 @@
     document.querySelectorAll("[data-name]").forEach(inp=>{
       inp.addEventListener("input",(e)=>{
         const i = Number(e.target.dataset.name);
-        players[i] = e.target.value || `玩家${i+1}`;
+        players[i] = e.target.value || \`玩家\${i+1}\`;
         renderSelectors();
         renderAll();
       });
@@ -463,7 +447,7 @@
         from:i,
         to:winner,
         amount,
-        raw:`查表 ${raw}`,
+        raw:\`查表 \${raw}\`,
         role:(i===dealer ? "庄" : "平")
       });
     }
@@ -483,7 +467,7 @@
           from: i,
           to: youWho,
           amount: youAmt,
-          raw: `游金 +${youAmt}`,
+          raw: \`游金 +\${youAmt}\`,
           role: "游金"
         });
       }
@@ -534,12 +518,12 @@
   }
 
   function badgeIf(name, should){
-    return should ? `${name}<span class="badge">🟡游金</span>` : name;
+    return should ? \`\${name}<span class="badge">🟡游金</span>\` : name;
   }
 
   function renderRoundList(){
     if (!rounds.length){
-      $("roundList").innerHTML = `<div class="muted">尚未記錄局數。</div>`;
+      $("roundList").innerHTML = \`<div class="muted">尚未記錄局數。</div>\`;
       return;
     }
 
@@ -550,21 +534,21 @@
       const dealerName = badgeIf(escapeHtml(players[r.dealer]), youWho === r.dealer);
       const winnerName = badgeIf(escapeHtml(players[r.winner]), youWho === r.winner);
 
-      const title = `第 ${idx+1} 局｜莊：${dealerName}｜贏：${winnerName}｜${typeLabel(r.type)}｜${r.water} 水`;
+      const title = \`第 \${idx+1} 局｜莊：\${dealerName}｜贏：\${winnerName}｜\${typeLabel(r.type)}｜\${r.water} 水\`;
 
       const lines = r.lines.map(L=>{
-        return `${escapeHtml(players[L.from])}（${escapeHtml(L.role)}） → ${escapeHtml(players[L.to])}：${fmtMoney(L.amount)} <span class="muted">(${escapeHtml(L.raw)})</span>`;
+        return \`\${escapeHtml(players[L.from])}（\${escapeHtml(L.role)}） → \${escapeHtml(players[L.to])}：\${fmtMoney(L.amount)} <span class="muted">(\${escapeHtml(L.raw)})</span>\`;
       }).join("<br>");
 
-      return `
+      return \`
         <div class="card roundCard">
           <div class="roundHeader">
-            <div class="roundTitle"><strong>${title}</strong></div>
-            <button onclick="removeRound(${idx})">刪除本局</button>
+            <div class="roundTitle"><strong>\${title}</strong></div>
+            <button onclick="removeRound(\${idx})">刪除本局</button>
           </div>
-          <div class="mono roundLines">${lines}</div>
+          <div class="mono roundLines">\${lines}</div>
         </div>
-      `;
+      \`;
     }).join("");
   }
 
@@ -572,44 +556,44 @@
     const totals = computeTotals();
     const sum = Math.round(totals.reduce((a,b)=>a+b,0)*100)/100;
 
-    const totalsRows = totals.map((amt,i)=>`
+    const totalsRows = totals.map((amt,i)=>\`
       <tr>
-        <td>${escapeHtml(players[i])}</td>
-        <td class="mono">${amt>=0?"+":""}${fmtMoney(amt)}</td>
+        <td>\${escapeHtml(players[i])}</td>
+        <td class="mono">\${amt>=0?"+":""}\${fmtMoney(amt)}</td>
       </tr>
-    `).join("");
+    \`).join("");
 
-    $("totalsArea").innerHTML = `
-      <div class="${Math.abs(sum) < 0.01 ? "ok" : "warn"}">
-        ${Math.abs(sum) < 0.01 ? "總和 OK（收支平衡）" : `警告：總和不為 0（目前 ${fmtMoney(sum)}）`}
+    $("totalsArea").innerHTML = \`
+      <div class="\${Math.abs(sum) < 0.01 ? "ok" : "warn"}">
+        \${Math.abs(sum) < 0.01 ? "總和 OK（收支平衡）" : \`警告：總和不為 0（目前 \${fmtMoney(sum)}）\`}
       </div>
       <table>
         <thead><tr><th>玩家</th><th>總輸贏（金額）</th></tr></thead>
-        <tbody>${totalsRows}</tbody>
+        <tbody>\${totalsRows}</tbody>
       </table>
-    `;
+    \`;
 
     const transfers = settleTransfers(totals);
     if (!transfers.length){
-      $("transfersArea").innerHTML = `<div class="muted">目前無需轉帳（或尚未記錄局數）。</div>`;
+      $("transfersArea").innerHTML = \`<div class="muted">目前無需轉帳（或尚未記錄局數）。</div>\`;
       return;
     }
 
-    $("transfersArea").innerHTML = `
+    $("transfersArea").innerHTML = \`
       <table>
         <thead><tr><th>誰付</th><th></th><th>付給誰</th><th>金額</th></tr></thead>
         <tbody>
-          ${transfers.map(t=>`
+          \${transfers.map(t=>\`
             <tr>
-              <td>${escapeHtml(players[t.from])}</td>
+              <td>\${escapeHtml(players[t.from])}</td>
               <td>→</td>
-              <td>${escapeHtml(players[t.to])}</td>
-              <td class="mono">${fmtMoney(t.amount)}</td>
+              <td>\${escapeHtml(players[t.to])}</td>
+              <td class="mono">\${fmtMoney(t.amount)}</td>
             </tr>
-          `).join("")}
+          \`).join("")}
         </tbody>
       </table>
-    `;
+    \`;
   }
 
   function renderAll(){
@@ -650,7 +634,6 @@
   $("winnerSel").addEventListener("change", ()=>{
     $("youWhoSel").value = $("winnerSel").value;
   });
-
 
   renderNames();
   renderSelectors();
