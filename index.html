@@ -179,12 +179,35 @@
   min-width:140px;
 }
 
-/* ===============================
+/* =====================================
    Mobile（手機）
-   =============================== */
+   ===================================== */
 @media (max-width:520px){
+  .stepper input[type="number"]{
+    width:52px !important;
+    flex:0 0 auto;
+  }
+}
+    
+/* =====================================
+   Desktop（桌機）
+   ===================================== */
+@media (min-width:521px){
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button{
+    -webkit-appearance:none;
+    margin:0;
+  }
 
-  /* 1) 玩家區：手機 2x2 + 按鈕滿寬（只影響手機） */
+  input[type="number"]{
+    -moz-appearance:textfield;
+  }
+
+  .stepper input[type="number"]{
+    width:56px;
+  }
+}
+
   .namesHeader{
     grid-template-columns: 1fr;
     align-items: stretch;
@@ -198,10 +221,16 @@
   .resetWrap{ min-width:0; }
   #resetBtn{ width:100%; }
 
-  /* 2) 水(stepper)的數字框：手機也固定短短的（防止被拉長） */
-  .stepper input[type="number"]{
-    width:52px !important;
-    flex:0 0 auto;
+  /* =====================================
+   共通（手機 + 桌機）
+   ===================================== */
+.stepper input[type="number"]{
+  height:44px;
+  padding:0;
+  text-align:center;
+  line-height:44px;
+  box-sizing:border-box;
+}
   }
 
   /* 3) 手機版 select：只有白色 ▼（不再上下雙箭頭） */
