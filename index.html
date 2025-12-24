@@ -183,21 +183,40 @@
    Mobile（手機）
    =============================== */
 @media (max-width:520px){
-  /* 你的手機規則都留在這裡 */
+
+  /* 玩家區：2x2（A B / C D），下面一整行重置牌局 */
+  .namesHeader{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  #namesRow.namesGrid{
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px !important;
+  }
+
+  /* 重置牌局：獨立一行、滿寬 */
+  #resetBtn{
+    width: 100%;
+    justify-self: stretch;
+  }
+
+  /* 水(stepper)：手機固定短寬 */
   .stepper input[type="number"]{
     width:52px !important;
     flex:0 0 auto;
   }
 
-  /* 你的 select 箭頭那段也留在這裡 */
+  /* 手機 select：只留白色 ▼ */
   select{
     appearance:none;
     -webkit-appearance:none;
     -moz-appearance:none;
-    /* ... */
   }
-} /* ⭐⭐ 這個右大括號要先結束手機 media ⭐⭐ */
-
+} /* ⭐⭐ 這個右大括號一定要在這裡結束 ⭐⭐ */
 
 /* ===============================
    Desktop（桌機）— 這段一定要在外面
