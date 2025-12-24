@@ -204,6 +204,28 @@
     flex:0 0 auto;
   }
 
+  /* 水(stepper)：數字真正置中（桌機＋手機） */
+.stepper input[type="number"]{
+  height:44px;
+  padding:0;
+  text-align:center;
+  line-height:44px;
+  box-sizing:border-box;
+}
+
+  /* 桌機：移除 number input 上下鍵 */
+@media (min-width:521px){
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button{
+    -webkit-appearance:none;
+    margin:0;
+  }
+
+  input[type="number"]{
+    -moz-appearance:textfield;
+  }
+}
+
   /* 3) 手機版 select：只有白色 ▼（不再上下雙箭頭） */
   select{
     appearance:none;
