@@ -602,8 +602,11 @@
       const youLine = r.lines.find(L => L.role === "游金");
       const youWho = youLine ? youLine.to : null;
 
-      const dealerName = badgeIf(escapeHtml(players[r.dealer]), youWho === r.dealer);
-      const winnerName = badgeIf(escapeHtml(players[r.winner]), youWho === r.winner);
+      // 莊家永遠不顯示游金 badge（只顯示名字）
+const dealerName = escapeHtml(players[r.dealer]);
+
+// badge 永遠只在贏家旁邊顯示（若游金者=贏家才顯示）
+const winnerName = badgeIf(escapeHtml(players[r.winner]), youWho === r.winner);
 
       const title = `第 ${idx+1} 局｜莊：${dealerName}｜贏：${winnerName}｜${typeLabel(r.type)}｜${r.water} 水`;
 
