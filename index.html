@@ -447,11 +447,11 @@
     toggleYouUI();
   }
 
-  function lookupAmount({type, water, payerIsDealer}){
-    const row = LOOKUP[type]?.[water];
-    if (!row) return null;
-    return payerIsDealer ? row["庄"] : row["平"];
-  }
+  function lookupAmount({ type, water, winnerIsDealer }){
+  const row = LOOKUP[type]?.[water];
+  if (!row) return null;
+  return winnerIsDealer ? row["庄"] : row["平"];
+}
 
   function typeLabel(t){
     return ({dao:"到（胡牌）", zimo:"自摸", danyou:"單游", shuangyou:"雙游"}[t] || t);
@@ -485,7 +485,12 @@
     for (let i=0;i<players.length;i++){
       if (i === winner) continue;
 
-      const raw = lookupAmount({type, water, payerIsDealer: (i === dealer)});
+      const raw = lookupAmount({
+  type,
+  water,
+  winnerIsDealer: (winner === dealer)
+});
+
       if (raw == null){
         alert("查表失敗：請確認贏法與水數是否有效。");
         return;
@@ -533,15 +538,24 @@
   window.removeRound = removeRound;
 
   function computeTotals(){
-    const totals = Array(players.length).fill(0);
-    rounds.forEach(r=>{
-      r.lines.forEach(L=>{
-        totals[L.from] -= L.amount;
-        totals[L.to]   += L.amount;
-      });
+  const totals = Array(players.length).fill(0);
+  const youRecvCount = Array(players.length).fill(0);
+  const youRecvAmt = Array(players.length).fill(0);
+
+  rounds.forEach(r=>{
+    r.lines.forEach(L=>{
+      totals[L.from] -= L.amount;
+      totals[L.to]   += L.amount;
+
+      if (L.role === "游金") {
+        youRecvCount[L.to] += 1;      // 收到游金的次數
+        youRecvAmt[L.to] += L.amount; // 收到游金的總額
+      }
     });
-    return totals;
-  }
+  });
+
+  return { totals, youRecvCount, youRecvAmt };
+}
 
   function settleTransfers(totals){
     const creditors = [];
@@ -601,15 +615,23 @@
   }
 
   function renderTotalsAndTransfers(){
-    const totals = computeTotals();
+    const { totals, youRecvCount, youRecvAmt } = computeTotals();
     const sum = Math.round(totals.reduce((a,b)=>a+b,0)*100)/100;
 
-    const totalsRows = totals.map((amt,i)=>`
-      <tr>
-        <td>${escapeHtml(players[i])}</td>
-        <td class="mono">${amt>=0?"+":""}${fmtMoney(amt)}</td>
-      </tr>
-    `).join("");
+    const totalsRows = totals.map((amt,i)=>{
+  const hasYou = youRecvCount[i] > 0 && Math.abs(youRecvAmt[i]) > 0.000001;
+
+  const youTag = hasYou
+    ? ` <span class="muted">（含游金 +${fmtMoney(youRecvAmt[i])} / ${youRecvCount[i]}次）</span>`
+    : "";
+
+  return `
+    <tr>
+      <td>${escapeHtml(players[i])}</td>
+      <td class="mono">${amt>=0?"+":""}${fmtMoney(amt)}${youTag}</td>
+    </tr>
+  `;
+}).join("");
 
     $("totalsArea").innerHTML = `
       <div class="${Math.abs(sum) < 0.01 ? "ok" : "warn"}">
