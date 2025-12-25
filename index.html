@@ -154,6 +154,8 @@
 
     /* primary CTA (記錄本局) */
     #addRoundBtn{
+  width:80px;
+  min-width:80px;
       background: linear-gradient(180deg, rgba(124,176,255,.24), rgba(78,123,255,.18)), var(--surface);
       border-color: rgba(78,123,255,.35);
     }
@@ -651,16 +653,16 @@ input{
 }
 
 
-/* v5.10: micro interaction for record button */
-#addBtn{
+/* v5.11: micro interaction for record button */
+#addRoundBtn{
   transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.12s ease;
 }
-#addBtn:active{
+#addRoundBtn:active{
   transform: translateY(1px) scale(0.985);
   box-shadow: 0 2px 8px rgba(0,0,0,.35) inset;
 }
-#addBtn.success{
-  background: linear-gradient(180deg, #2b5cff, #1e3fa8) !important;
+#addRoundBtn.success{
+  filter: brightness(1.08);
 }
 
 </style>
@@ -1155,9 +1157,9 @@ const winnerName = badgeIf(escapeHtml(players[r.winner]), youWho === r.winner);
   toggleYouUI();
   renderAll();
 
-  // v5.10: subtle success feedback on record
+  // v5.11: subtle success feedback on record
   function flashRecordBtn(){
-    const btn = document.getElementById("addBtn");
+    const btn = document.getElementById("addRoundBtn");
     if(!btn) return;
     btn.classList.add("success");
     setTimeout(()=>btn.classList.remove("success"),120);
