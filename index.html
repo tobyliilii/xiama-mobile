@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>說吧!今天誰天胡🀄️</title>
+
   <style>
     :root{
       --bg:#0b0f14;
@@ -28,36 +29,37 @@
       background:var(--bg);
       color:var(--text);
       font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",system-ui,sans-serif;
-      -webkit-text-size-adjust: 100%;
-      padding-bottom: calc(18px + env(safe-area-inset-bottom));
+      -webkit-text-size-adjust:100%;
+      padding-bottom:calc(18px + env(safe-area-inset-bottom));
     }
 
     .app{
-      max-width: 820px;
-      margin: 0 auto;
-      padding: 18px 16px 22px;
+      max-width:820px;
+      margin:0 auto;
+      padding:18px 16px 22px;
     }
 
-    h1{margin:8px 0 6px; font-size:22px; line-height:1.2;}
-    .muted{color:var(--muted);font-size:13px; line-height:1.55;}
+    h1{ margin:8px 0 6px; font-size:22px; line-height:1.2; }
+    .muted{ color:var(--muted); font-size:13px; line-height:1.55; }
+
     .card{
       background:var(--card);
       border:1px solid var(--border);
       border-radius:var(--radius);
       padding:16px;
       margin:14px 0;
-      box-shadow: var(--shadow);
+      box-shadow:var(--shadow);
     }
 
     /* general form row */
-    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+    .row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
     .row > div{
       display:flex;
       flex-direction:column;
       justify-content:flex-end;
     }
 
-    label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
+    label{ font-size:12px; color:var(--muted); display:block; margin-bottom:6px; }
 
     input,select,button{
       padding:12px 12px;
@@ -68,12 +70,11 @@
       color:var(--text);
       min-height:44px;
     }
-
-    input, select{ height:44px; }
+    input,select{ height:44px; }
     button{ height:44px; line-height:44px; }
 
-    input[type="number"]{width:160px}
-    input[type="text"]{width:160px}
+    input[type="number"]{ width:160px; }
+    input[type="text"]{ width:160px; }
 
     button{
       cursor:pointer;
@@ -83,12 +84,13 @@
     }
     button:active{ transform: translateY(1px); }
 
-    table{width:100%;border-collapse:collapse;margin-top:10px}
-    th,td{border-bottom:1px solid var(--tableBorder);padding:10px 8px;text-align:left;vertical-align:top}
-    th{font-size:13px;color:var(--muted);font-weight:800}
-    .warn{color:#ff6b6b;font-size:13px;margin-top:8px}
-    .ok{color:#3ddc84;font-size:13px;margin-top:8px}
-    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+    table{ width:100%; border-collapse:collapse; margin-top:10px; }
+    th,td{ border-bottom:1px solid var(--tableBorder); padding:10px 8px; text-align:left; vertical-align:top; }
+    th{ font-size:13px; color:var(--muted); font-weight:800; }
+
+    .warn{ color:#ff6b6b; font-size:13px; margin-top:8px; }
+    .ok{ color:#3ddc84; font-size:13px; margin-top:8px; }
+    .mono{ font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace; }
 
     .badge{
       display:inline-block;
@@ -100,7 +102,7 @@
       border:1px solid var(--border);
       margin-left:6px;
       line-height:1.6;
-      vertical-align: middle;
+      vertical-align:middle;
     }
 
     .roundCard{
@@ -120,7 +122,7 @@
       margin-top:10px;
       font-size:13px;
       line-height:1.55;
-      word-break: break-word;
+      word-break:break-word;
     }
     .roundHeader button{
       height:40px;
@@ -133,173 +135,150 @@
 
     .formRow{ align-items:flex-end; }
 
-    /* ---- Player header (Desktop: names + reset in ONE row) ---- */
+    /* ===============================
+       Names area (Desktop default)
+       =============================== */
     .namesHeader{
-  display:grid;
-  grid-template-columns: 1fr auto;
-  gap:12px;
-  align-items:end;
-}
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:12px;
+      align-items:end;
+    }
 
-/* 名字區：4格 + 明確的 gap（加 !important 防被蓋） */
-#namesRow.namesGrid{
-  display:grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap:12px !important;              /* ⭐ 強制分開 */
-  align-items:stretch;
-}
+    #namesRow.namesGrid{
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0, 1fr));
+      gap:12px !important;
+      align-items:stretch;
+    }
 
-/* 每一格（你 JS 塞進去的 div） */
-#namesRow.namesGrid > div{
-  min-width:0;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
+    #namesRow.namesGrid > div{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
 
-/* ⭐ 讓「框」真的像框：無論你裡面是 input 或 div，都會變成卡片 */
-#namesRow.namesGrid input,
-#namesRow.namesGrid .nameBox,
-#namesRow.namesGrid .box{
-  width:100%;
-  background:#0b1220;
-  border:1px solid #334155;
-  border-radius:16px;
-  padding:16px 14px;
-  color:#fff;
-  box-shadow: 0 8px 24px rgba(0,0,0,.35); /* 分離感 */
-  box-sizing:border-box;
-}
+    #namesRow.namesGrid input{
+      width:100%;
+      background:#0b1220;
+      border:1px solid #334155;
+      border-radius:16px;
+      padding:16px 14px;
+      color:#fff;
+      box-shadow:0 8px 24px rgba(0,0,0,.35);
+      box-sizing:border-box;
+    }
 
-/* 重置按鈕那塊 */
-.resetWrap{
-  display:flex;
-  flex-direction:column;
-  justify-content:flex-end;
-  min-width:140px;
-}
+    .resetWrap{
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+      min-width:140px;
+    }
 
-/* ===============================
-   Mobile（手機）
-   =============================== */
-@media (max-width:520px){
+    /* ===============================
+       Stepper (Water)
+       =============================== */
+    .stepper{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
 
-  /* 玩家區：2x2（A B / C D），下面一整行重置牌局 */
-  .namesHeader{
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 12px;
-    align-items: stretch;
-  }
+    /* 共通：0 置中（桌機+手機） */
+    .stepper input[type="number"]{
+      height:44px;
+      padding:0;
+      text-align:center;
+      line-height:44px;
+      box-sizing:border-box;
+      width:52px !important;
+      min-width:52px;
+      max-width:52px;
+      flex:0 0 auto;
+    }
 
-  #namesRow.namesGrid{
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px !important;
-  }
+    .stepper button{
+      width:44px;
+      height:44px;
+      padding:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex:0 0 auto;
+    }
 
-  /* 玩家名稱預設置中（手機＋桌機） */
-#namesRow input[type="text"]{
-  text-align: center;
-}
+    /* ===============================
+       Select style (global)
+       - keep a clean white ▼ arrow
+       =============================== */
+    select{
+      appearance:none;
+      -webkit-appearance:none;
+      -moz-appearance:none;
 
-  /* 重置牌局：獨立一行、滿寬 */
-  #resetBtn{
-    width: 100%;
-    justify-self: stretch;
-  }
-
-  /* 水(stepper)：手機固定短寬 */
-  .stepper input[type="number"]{
-    width:52px !important;
-    flex:0 0 auto;
-  }
-
-  /* 手機 select：只留白色 ▼ */
-  select{
-    appearance:none;
-    -webkit-appearance:none;
-    -moz-appearance:none;
-  }
-} /* ⭐⭐ 這個右大括號一定要在這裡結束 ⭐⭐ */
-
-/* ===============================
-   Desktop（桌機）— 這段一定要在外面
-   =============================== */
-@media (min-width:521px){
-  /* 建議只針對「水」這顆 input，避免誤傷其他 number input */
-  #waterInput::-webkit-inner-spin-button,
-  #waterInput::-webkit-outer-spin-button{
-    -webkit-appearance:none;
-    margin:0;
-  }
-  #waterInput{
-    -moz-appearance:textfield; /* Firefox */
-  }
-
-  /* 桌機寬度你要 52/56 都行 */
-  .stepper input[type="number"]{
-    width:52px !important;
-  }
-}
-
-/* 共通：0 置中（放全域，桌機手機都吃得到） */
-.stepper input[type="number"]{
-  height:44px;
-  padding:0;
-  text-align:center;
-  line-height:44px;
-  box-sizing:border-box;
-}
-
-  /* 3) 手機版 select：只有白色 ▼（不再上下雙箭頭） */
-  select{
-    appearance:none;
-    -webkit-appearance:none;
-    -moz-appearance:none;
-
-    background-image:url("data:image/svg+xml;utf8,\
+      background-image:url("data:image/svg+xml;utf8,\
 <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
 <path fill='white' d='M6 9l6 6 6-6'/>\
 </svg>");
-    background-repeat:no-repeat;
-    background-size:16px;
-    background-position:right 12px center;
-    padding-right:44px;
-  }
-    
-/* ===============================
-   Visual Center Line（全域）
-   =============================== */
-#namesRow input[type="text"]{
-  text-align: center;
-}
+      background-repeat:no-repeat;
+      background-size:16px;
+      background-position:right 12px center;
+      padding-right:44px;
+      text-align:center;
+      text-align-last:center; /* Chrome/Edge */
+    }
+
     /* ===============================
-   Desktop：水(stepper)數字框固定寬
-   =============================== */
+       Visual Center Line (global)
+       =============================== */
+    #namesRow input[type="text"]{
+      text-align:center;
+    }
 
-/* 覆蓋全域 input[type="number"] width:160px */
-.stepper{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
+    /* ===============================
+       Mobile（手機）
+       =============================== */
+    @media (max-width:520px){
+      .namesHeader{
+        display:grid;
+        grid-template-columns:1fr;
+        gap:12px;
+        align-items:stretch;
+      }
 
-/* 水的數字 input：桌機固定小尺寸 */
-.stepper input[type="number"]{
-  width:52px !important;   /* 可改 52 / 56 / 60 */
-  min-width:52px;
-  max-width:52px;
-  flex:0 0 auto;
-  text-align:center;
-}
+      #namesRow.namesGrid{
+        display:grid;
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+        gap:12px !important;
+      }
 
-/* + / - 按鈕桌機維持方形 */
-.stepper button{
-  width:44px;
-  height:44px;
-  flex:0 0 auto;
-}
+      #resetBtn{
+        width:100%;
+        justify-self:stretch;
+      }
+
+      /* 手機 stepper input：保持短寬（已在共通定死 52px，這裡可留空也行） */
+      .stepper input[type="number"]{
+        width:52px !important;
+      }
+    }
+
+    /* ===============================
+       Desktop（桌機）
+       - remove number spinner ONLY for waterInput
+       =============================== */
+    @media (min-width:521px){
+      #waterInput::-webkit-inner-spin-button,
+      #waterInput::-webkit-outer-spin-button{
+        -webkit-appearance:none;
+        margin:0;
+      }
+      #waterInput{
+        -moz-appearance:textfield;
+      }
+    }
 
     button, select, input{ touch-action: manipulation; }
   </style>
@@ -309,15 +288,12 @@
   <div class="app">
     <h1>說吧!今天誰天胡🀄️</h1>
 
-   <div class="card">
-  <div class="namesHeader">
-    <div id="namesRow" class="namesGrid"></div>
-
-    <button id="resetBtn" class="resetBtn">
-      重置牌局
-    </button>
-  </div>
-</div>
+    <div class="card">
+      <div class="namesHeader">
+        <div id="namesRow" class="namesGrid"></div>
+        <button id="resetBtn" class="resetBtn">重置牌局</button>
+      </div>
+    </div>
 
     <div class="card">
       <div class="row formRow">
@@ -392,7 +368,6 @@
   </div>
 
 <script>
-
   const $ = (id) => document.getElementById(id);
 
   const LOOKUP = {
@@ -713,7 +688,6 @@
   syncWaterByType();
   toggleYouUI();
   renderAll();
-
 </script>
 </body>
 </html>
