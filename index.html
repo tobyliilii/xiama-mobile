@@ -591,17 +591,31 @@ input{
 
 /* ===== v5.2: tighten widths + hard-fix water stepper square issue ===== */
 .stepper-water{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
   height:44px !important;
+  min-height:44px !important;
+  max-height:44px !important;
   width:80px !important;
   min-width:80px !important;
   max-width:80px !important;
   padding:0 !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:space-between !important;
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+  flex:0 0 80px !important;
 }
-.stepper-water button{ width:22px !important; height:44px !important; }
-.stepper-water #waterInput{ width:32px !important; height:44px !important; line-height:44px !important; }
+.stepper-water button{
+  width:22px !important;
+  height:44px !important;
+  min-height:44px !important;
+}
+.stepper-water #waterInput{
+  width:32px !important;
+  height:44px !important;
+  min-height:44px !important;
+  line-height:44px !important;
+}
 
 </style>
 </head>
