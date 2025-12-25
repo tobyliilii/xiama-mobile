@@ -527,8 +527,8 @@ input{
 
 /* Key selects: prevent text/arrow overlap */
 #dealerSel, #winnerSel, #typeSel{
-  min-width:120px !important;
-  width:120px !important;
+  min-width:90px !important;
+  width:90px !important;
 }
 
 /* Since we removed 紅包欄位, keep second row strictly single-line */
@@ -592,16 +592,16 @@ input{
 /* ===== v5.2: tighten widths + hard-fix water stepper square issue ===== */
 .stepper-water{
   height:44px !important;
-  max-height:44px !important;
-  min-height:44px !important;
+  width:80px !important;
+  min-width:80px !important;
+  max-width:80px !important;
   padding:0 !important;
-  width:150px !important;
-  flex:0 0 150px !important;
-  box-sizing:border-box !important;
-  overflow:hidden !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
 }
-.stepper-water button{ height:44px !important; width:44px !important; }
-.stepper-water #waterInput{ height:44px !important; line-height:44px !important; }
+.stepper-water button{ width:22px !important; height:44px !important; }
+.stepper-water #waterInput{ width:32px !important; height:44px !important; line-height:44px !important; }
 
 </style>
 </head>
@@ -661,10 +661,7 @@ input{
           </select>
         </div>
 
-        <div id="youWhoWrap" style="display:none;">
-          <label>游金者</label>
-          <select id="youWhoSel"></select>
-        </div>
+        
 
         <div>
           <label>&nbsp;</label>
@@ -907,7 +904,7 @@ $("youWhoSel").value = $("winnerSel").value;
     }
 
     if ($("youSel").value === "yes") {
-      const youWho = Number($("youWhoSel").value);
+      const youWho = Number($("winnerSel").value);
       const youAmt = 10; // v5: fixed bonus, no manual input
 
       for (let i = 0; i < players.length; i++) {
