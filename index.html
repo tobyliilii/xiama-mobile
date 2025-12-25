@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>說吧!今天誰天胡🀄️</title>
+  <title>說吧!今天誰天胡🀄️ • v6.1</title>
   <!-- v5: water 44px, widen selects, remove per-person red packet; you bonus fixed +10 -->
 
   <style>
@@ -726,10 +726,28 @@ input{
   justify-content:center !important;
 }
 
+
+/* deploy debug badge */
+.deploy-badge{
+  position:fixed;
+  top:10px;
+  right:12px;
+  font-size:12px;
+  opacity:.55;
+  padding:6px 10px;
+  border-radius:999px;
+  background: rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+  backdrop-filter: blur(10px);
+  pointer-events:none;
+  z-index:9999;
+}
+
 </style>
 </head>
 
 <body>
+  <div class="deploy-badge">deploy v6.1 • left120 • CTA flex</div>
   <div class="app">
     <h1>說吧!今天誰天胡🀄️</h1>
 
