@@ -747,16 +747,27 @@ input{
 }
 
 
-/* ===== v6.6: Names row - bring 玩家1/2/3/4 labels closer to the input pills ===== */
-#namesRow.namesGrid > div{
-  gap: 4px !important; /* was 8px */
+/* ===== v7: wider inputs + icon-only record button ===== */
+
+/* widen key controls */
+#dealerSel, #winnerSel, #typeSel{
+  width:140px !important;
+  min-width:140px !important;
+}
+.stepper-water{
+  width:150px !important;
+  min-width:150px !important;
 }
 
-/* Reduce label bottom spacing specifically in the names grid */
-#namesRow.namesGrid label{
-  margin-bottom: 2px !important; /* was 8px globally */
-  font-size: 11px !important;
-  line-height: 1.2 !important;
+/* record button same size as reset */
+#addRoundBtn{
+  width:64px !important;
+  min-width:64px !important;
+  max-width:64px !important;
+  padding:0 !important;
+}
+#addRoundBtn svg{
+  display:block;
 }
 
 </style>
@@ -810,7 +821,13 @@ input{
         </select>
 <div>
           <label>&nbsp;</label>
-          <button id="addRoundBtn">記錄本局</button>
+          <button id="addRoundBtn" aria-label="記錄本局">
+<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"
+     style="transform:scaleX(-1);">
+  <path fill="currentColor"
+    d="M3 17.25V21h3.75L17.8 9.95l-3.75-3.75L3 17.25zm2.92 2.33H5v-.92l9.06-9.06.92.92L5.92 19.58zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/>
+</svg>
+</button>
         </div>
       </div>
     </div>
