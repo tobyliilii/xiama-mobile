@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>說吧!今天誰天胡🀄️</title>
+  <!-- v5: water 44px, widen selects, remove per-person red packet; you bonus fixed +10 -->
 
   <style>
     :root{
@@ -501,6 +502,38 @@ input{
   width:100% !important;
 }
 
+
+/* ===== v5: refinements (water to 44px rectangle, widen key selects) ===== */
+
+/* Water: make it a true 44px rectangle like other inputs */
+.stepper{
+  padding:0 !important;
+  height:44px !important;
+  border-radius:14px !important;
+  width:160px !important;         /* v5: rectangle width */
+  flex:0 0 160px !important;
+}
+.stepper button{
+  width:44px !important;
+  height:44px !important;
+  border-radius:12px !important;
+}
+#waterInput{
+  width:72px !important;          /* give the number a bit more breathing room */
+  min-width:72px !important;
+  max-width:72px !important;
+  height:44px !important;
+}
+
+/* Key selects: prevent text/arrow overlap */
+#dealerSel, #winnerSel, #typeSel{
+  min-width:170px !important;
+  width:170px !important;
+}
+
+/* Since we removed 紅包欄位, keep second row strictly single-line */
+#youWhoWrap{ min-width:170px !important; }
+
 </style>
 </head>
 
@@ -565,11 +598,6 @@ input{
         <div id="youWhoWrap" style="display:none;">
           <label>游金者</label>
           <select id="youWhoSel"></select>
-        </div>
-
-        <div id="youAmtWrap" style="display:none;">
-          <label>每人紅包</label>
-          <input id="youAmt" type="number" value="10" step="1" inputmode="numeric" />
         </div>
 
         <div>
@@ -658,12 +686,11 @@ input{
   function toggleYouUI(){
     const hasYou = $("youSel").value === "yes";
     $("youWhoWrap").style.display = hasYou ? "flex" : "none";
-    $("youAmtWrap").style.display = hasYou ? "flex" : "none";
     if (hasYou) {
       if (!$("youWhoSel").value) $("youWhoSel").value = $("winnerSel").value;
     }
     syncYouSegmented();
-  syncYouSegmentedDisabled();
+    syncYouSegmentedDisabled();
 }
 
 
@@ -804,12 +831,7 @@ $("youWhoSel").value = $("winnerSel").value;
 
     if ($("youSel").value === "yes") {
       const youWho = Number($("youWhoSel").value);
-      const youAmt = Number($("youAmt").value || 0);
-
-      if (!Number.isFinite(youAmt) || youAmt < 0) {
-        alert("游金加給金額請填正數（或 0）。");
-        return;
-      }
+      const youAmt = 10; // v5: fixed bonus, no manual input
 
       for (let i = 0; i < players.length; i++) {
         if (i === youWho) continue;
