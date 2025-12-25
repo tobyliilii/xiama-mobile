@@ -846,6 +846,101 @@ input{
   }
 }
 
+
+/* ===== v10: Third column mobile-friendly round cards ===== */
+:root{
+  --youGold:#f5d24a;
+}
+.roundCard{
+  border:1px solid rgba(255,255,255,.08);
+}
+.roundCard.isYoujin{
+  border:2px solid var(--youGold);
+}
+.roundHeader{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+}
+.roundDelBtn{
+  width:54px;
+  height:54px;
+  border-radius:16px;
+  border:2px solid rgba(255,255,255,.18);
+  background: rgba(255,255,255,.04);
+  color: rgba(255,255,255,.92);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+}
+.roundDelBtn:active{ transform: scale(.98); }
+
+.roundTitle .rTop{
+  font-weight:700;
+  color: rgba(255,255,255,.55);
+  letter-spacing:.2px;
+}
+.roundTitle .rIdx{ margin-right:6px; color: rgba(255,255,255,.45); }
+.roundTitle .rMain{
+  margin-top:10px;
+  font-size:34px;
+  font-weight:900;
+  letter-spacing:.2px;
+  color: rgba(255,255,255,.96);
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:10px;
+}
+.roundTitle .rWinner{ font-weight:900; }
+.roundTitle .rSep{ opacity:.55; font-weight:800; }
+.roundTitle .rWater{ font-weight:900; }
+.roundTitle .rDot{ opacity:.55; }
+.roundTitle .rType{ font-weight:900; }
+
+.youBadge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 12px;
+  border-radius:999px;
+  border:2px solid rgba(245,210,74,.35);
+  background: rgba(245,210,74,.10);
+  color: rgba(255,255,255,.90);
+  font-size:16px;
+  font-weight:800;
+  margin-left:2px;
+}
+.youDot{
+  width:12px;
+  height:12px;
+  border-radius:999px;
+  background: var(--youGold);
+  box-shadow: 0 0 0 4px rgba(245,210,74,.18);
+}
+.roundTitle .rSub{
+  margin-top:14px;
+  font-size:22px;
+  font-weight:800;
+  color: rgba(255,255,255,.45);
+}
+
+/* Desktop keeps detailed lines visible */
+.roundLinesDesktop{ margin-top:14px; }
+
+/* Mobile tune: hide the old ultra-detailed lines; keep summary only */
+@media (max-width:520px){
+  .roundLinesDesktop{
+    display:none !important;
+  }
+  .roundCard{
+    padding:22px 22px !important;
+    border-radius:34px !important;
+  }
+}
+
 </style>
 </head>
 
@@ -1054,7 +1149,7 @@ toggleYouUI();
 }
 
   function typeLabel(t){
-    return ({dao:"胡牌", zimo:"自摸", danyou:"單游", shuangyou:"雙游"}[t] || t);
+    return ({dao:"到（胡牌）", zimo:"自摸", danyou:"單游", shuangyou:"雙游"}[t] || t);
   }
 
   function syncWaterByType(){
@@ -1231,16 +1326,40 @@ const winnerName = badgeIf(escapeHtml(players[r.winner]), youWho === r.winner);
         return `${escapeHtml(players[L.from])}（${escapeHtml(L.role)}） → ${escapeHtml(players[L.to])}：${fmtMoney(L.amount)} <span class="muted">(${escapeHtml(L.raw)})</span>`;
       }).join("<br>");
 
-      return `
-        <div class="card roundCard">
+      
+      const hasYou = r.lines.some(L => L.role === "游金");
+return `
+        <div class="card roundCard ${hasYou ? "isYoujin" : ""}">
           <div class="roundHeader">
-            <div class="roundTitle"><strong>${title}</strong></div>
-            <button onclick="removeRound(${idx})">刪除本局</button>
+            <div class="roundTitle">
+              <div class="rTop"><span class="rIdx">${idx+1}.</span> <span class="rDealer">莊家:${escapeHtml(players[r.dealer])}</span></div>
+              <div class="rMain">
+                <span class="rWinner">${escapeHtml(players[r.winner])}</span>
+                <span class="rSep">-</span>
+                <span class="rWater">${r.water}水</span>
+                <span class="rDot">·</span>
+                <span class="rType">${escapeHtml(typeLabel(r.type))}</span>
+                ${hasYou ? '<span class="youBadge"><span class="youDot"></span>游金</span>' : ''}
+              </div>
+              <div class="rSub">莊家${fmtMoney(lookupAmount({type:r.type, water:r.water, winnerIsDealer:true}) || 0)}/平家${fmtMoney(lookupAmount({type:r.type, water:r.water, winnerIsDealer:false}) || 0)}</div>
+            </div>
+
+            <button class="roundDelBtn" onclick="removeRound(${idx})" aria-label="刪除本局" title="刪除本局">
+              <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style="display:block">
+  <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 7h16"/>
+    <path d="M10 3h4"/>
+    <path d="M6 7l1 14h10l1-14"/>
+    <path d="M10 11v6"/>
+    <path d="M14 11v6"/>
+  </g>
+</svg>
+            </button>
           </div>
-          <div class="mono roundLines">${lines}</div>
+
+          <div class="mono roundLines roundLinesDesktop">${lines}</div>
         </div>
-      `;
-    }).join("");
+      `;}).join("");
   }
 
   function renderTotalsAndTransfers(){
