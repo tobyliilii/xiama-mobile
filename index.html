@@ -395,6 +395,7 @@
 
   let players = ["A","B","C","D"];
   let rounds = [];
+  let youForcedByType = false;
 
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, (c)=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
@@ -458,15 +459,39 @@
   }
 
   function syncWaterByType(){
-    const type = $("typeSel").value;
-    const input = $("waterInput");
-    let v = Number(input.value || 0);
-    if (!Number.isFinite(v)) v = 0;
+  const type = $("typeSel").value;
+  const input = $("waterInput");
 
-    v = Math.max(0, Math.min(12, v));
-    if ((type === "danyou" || type === "shuangyou") && v < 1) v = 1;
-    input.value = String(v);
+  let v = Number(input.value || 0);
+  if (!Number.isFinite(v)) v = 0;
+
+  v = Math.max(0, Math.min(12, v));
+  if ((type === "danyou" || type === "shuangyou") && v < 1) v = 1;
+  input.value = String(v);
+
+  // --- 單游/雙游：自動開啟游金 ---
+  const isYouType = (type === "danyou" || type === "shuangyou");
+
+  if (isYouType) {
+    // 強制切到「有」
+    if ($("youSel").value !== "yes") $("youSel").value = "yes";
+
+    youForcedByType = true;
+$("youWhoSel").value = $("winnerSel").value;
+
+    // 避免手滑改回「無」
+    $("youSel").disabled = true;
+  } else {
+    // 從單游/雙游切回來：解除強制
+    if (youForcedByType) {
+      $("youSel").disabled = false;
+      // 策略 B：保留使用者目前選擇（不動 value）
+      youForcedByType = false;
+    }
   }
+
+  toggleYouUI();
+}
 
   function addRound(){
     const dealer = Number($("dealerSel").value);
