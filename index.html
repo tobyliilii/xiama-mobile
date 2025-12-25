@@ -747,32 +747,24 @@ input{
 }
 
 
-/* ===== v6.3: align Player row controls baseline with Record row controls ===== */
-#namesRow.namesGrid > div{
-  justify-content: flex-end !important;
-}
-
-
-/* ===== v6.4: make Names card controls sit on the same "floor" as the record row ===== */
-/* Give the header a little extra height so bottom-alignment is visible */
+/* ===== v6.5: subtle baseline alignment for Names card (no huge empty space) ===== */
+/* Give a SMALL extra height so the bottom alignment is perceptible, but not awkward */
 .namesHeader{
-  min-height: 132px !important;
-  align-items: stretch !important;
+  min-height: 96px !important;   /* was too tall in v6.4 */
+  align-items: flex-end !important;
 }
 
-/* Let the grid fill the header height and align its content to the bottom */
+/* Push the grid content to the bottom within the header area */
 #namesRow.namesGrid{
   height: 100% !important;
   align-content: end !important;
 }
-
-/* Each player cell fills the height; stack label + input, and push to bottom */
 #namesRow.namesGrid > div{
   height: 100% !important;
   justify-content: flex-end !important;
 }
 
-/* Keep the swap button sitting on the same baseline */
+/* Keep swap button on the same floor */
 #resetBtn{
   align-self: flex-end !important;
 }
