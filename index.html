@@ -942,25 +942,37 @@ input{
 }
 
 
-/* ===== v11: Mobile record polish (octagon youjin + bigger centered trash) ===== */
+/* ===== v11 (fix): Mobile third column polish ===== */
 @media (max-width:520px){
 
-  /* 1) Youjin badge: octagon icon only (no text) */
-  .m-youjin-badge{
-    display:inline-flex !important;
+  /* Header layout: keep tools centered on the card's main axis */
+  .roundHeader{
     align-items:center !important;
-    justify-content:center !important;
+  }
+  .roundTitle{
+    min-width:0 !important;
+  }
+
+  /* 1) Youjin badge -> octagon icon only (no text) */
+  .youBadge{
     padding:0 !important;
     width:30px !important;
     height:30px !important;
     border-radius:10px !important;
     border:1px solid rgba(255, 210, 64, 0.35) !important;
     background: rgba(255, 210, 64, 0.10) !important;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06) !important;
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:0 !important;
+    font-size:0 !important; /* hide text width */
+    line-height:0 !important;
+    white-space:nowrap !important;
+    vertical-align:middle !important;
   }
-  .m-youjin-badge span{ display:none !important; }
+  .youBadge .youDot{ display:none !important; }
 
-  .m-youjin-badge::before{
+  .youBadge::before{
     content:"";
     width:18px;
     height:18px;
@@ -978,23 +990,21 @@ input{
     );
   }
 
-  /* 2) Trash button: slightly bigger + align to card center */
-  .m-record-card{ position:relative; }
-
-  .m-trash-btn{
+  /* 2) Trash button bigger + centered */
+  .roundDelBtn{
     width:56px !important;
     height:56px !important;
     border-radius:16px !important;
     display:flex !important;
     align-items:center !important;
     justify-content:center !important;
-
-    position:absolute !important;
-    right:18px !important;
-    top:50% !important;
-    transform: translateY(-50%) !important;
+    align-self:center !important;
+    flex:0 0 auto !important;
   }
-  .m-trash-btn svg{ width:26px !important; height:26px !important; }
+  .roundDelBtn svg{
+    width:26px !important;
+    height:26px !important;
+  }
 }
 
 </style>
