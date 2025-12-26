@@ -1361,6 +1361,15 @@ toggleYouUI();
 
     rounds.push({dealer, winner, type, water, lines});
     saveState();
+
+    // v11.4: New round defaults to NO 游金 (avoid leaking state to next round)
+    try{
+      if (typeof setYouValue === "function") setYouValue("no");
+      else if ($("youSel")) $("youSel").value = "no";
+      if (typeof toggleYouUI === "function") toggleYouUI();
+      if (typeof updateYouPill === "function") updateYouPill();
+    }catch(e){}
+
     renderAll();
   }
 
