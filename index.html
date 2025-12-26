@@ -1423,6 +1423,59 @@ input{
   display:none !important;
 }
 
+
+/* ===== PATCH vB17: Desktop tables - tighten last column & improve alignment ===== */
+#totalsArea table,
+#transfersArea table{
+  width:100%;
+  table-layout:fixed;
+}
+
+#totalsArea th:nth-child(1),
+#totalsArea td:nth-child(1){
+  width:200px;
+}
+#totalsArea th:nth-child(2),
+#totalsArea td:nth-child(2){
+  text-align:right;
+  width:220px;
+}
+
+#transfersArea th:nth-child(1),
+#transfersArea td:nth-child(1){
+  width:180px;
+}
+#transfersArea th:nth-child(2),
+#transfersArea td:nth-child(2){
+  width:60px;
+  text-align:center;
+}
+#transfersArea th:nth-child(3),
+#transfersArea td:nth-child(3){
+  width:auto;
+}
+#transfersArea th:nth-child(4),
+#transfersArea td:nth-child(4){
+  width:160px;
+  text-align:right;
+}
+
+#totalsArea td,
+#transfersArea td{
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* Keep mobile locked columns behavior; only apply tighter spacing on wider screens */
+@media (min-width:900px){
+  #totalsArea th, #totalsArea td,
+  #transfersArea th, #transfersArea td{
+    padding-top:16px;
+    padding-bottom:16px;
+  }
+}
+
 </style>
 </head>
 
