@@ -1199,6 +1199,50 @@ input{
   .roundDelBtn{ right:18px !important; }
 }
 
+
+/* ===== PATCH vB9: Mobile tune (trash smaller, thinner border, typography down) ===== */
+@media (max-width:520px){
+  /* Trash: a bit smaller + border thinner */
+  .roundDelBtn{
+    width:72px !important;
+    height:72px !important;
+    border-radius:22px !important;
+    border-width:0px !important; /* we'll set exact border below */
+  }
+  /* original border is 2px; make it 0 then reapply 0? better: set 1px */
+  .roundDelBtn{
+    border:1px solid rgba(255,255,255,.18) !important;
+  }
+  .roundDelBtn svg{
+    width:34px !important;
+    height:34px !important;
+  }
+
+  /* Main summary line: A - 0水 · 胡牌 (down 2 steps) */
+  .roundTitle .rMain{
+    font-size:28px !important;
+    gap:8px !important;
+  }
+
+  /* Sub line: 莊家xx/平家xx smaller */
+  .roundTitle .rSub{
+    font-size:16px !important;
+    margin-top:10px !important;
+  }
+}
+
+
+/* ===== PATCH vB10: Mobile tables keep first column visible ===== */
+@media (max-width:520px){
+  table{ table-layout:fixed !important; }
+  th,td{ overflow:hidden; text-overflow:ellipsis; }
+  th:first-child, td:first-child{
+    width:72px !important;
+    min-width:72px !important;
+    white-space:nowrap !important;
+  }
+}
+
 </style>
 </head>
 
