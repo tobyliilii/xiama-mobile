@@ -1044,13 +1044,23 @@ input{
   }
 }
 
-/* =========================================================
-   v11.4 Toby requested tweaks:
-   1) 游金 badge 只留圖形（取消「游金」文字）
-   2) 垃圾桶更大、icon 置中（全尺寸）
-   ========================================================= */
 
-/* 1) Youjin badge: icon only, no text (desktop + mobile) */
+/* ===== PATCH (B): no localStorage + centered trash (desktop & mobile) + youjin icon only ===== */
+
+/* Trash: always center icon, all breakpoints */
+.roundDelBtn{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 !important;
+  line-height:0 !important;
+}
+.roundDelBtn svg{
+  display:block !important;
+  margin:0 !important;
+}
+
+/* Youjin badge: octagon only (remove text) */
 .youBadge{
   width:auto !important;
   height:auto !important;
@@ -1061,19 +1071,14 @@ input{
   border-radius:0 !important;
   font-size:0 !important;
   line-height:0 !important;
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
 }
 .youBadge span,
-.youBadge .youDot{
-  display:none !important;
-}
+.youBadge .youDot{ display:none !important; }
 .youBadge::before{
   content:"";
   width:22px !important;
   height:22px !important;
-  display:block !important;
+  display:inline-block;
   background:#FFD240 !important;
   clip-path: polygon(
     30% 0%,
@@ -1085,21 +1090,6 @@ input{
     0% 70%,
     0% 30%
   );
-}
-
-/* 2) Trash: bigger + perfectly centered */
-.roundDelBtn{
-  width:72px !important;
-  height:72px !important;
-  border-radius:20px !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  padding:0 !important;
-}
-.roundDelBtn svg{
-  width:34px !important;
-  height:34px !important;
 }
 
 </style>
@@ -1205,23 +1195,6 @@ input{
 
   let players = ["A","B","C","D"];
   let rounds = [];
-
-  // ===== v11.2: Persist rounds across file/version (stable localStorage key) =====
-  const STORAGE_KEY = "xiama_rounds_v1";
-  function loadState(){
-    try{
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if(!raw) return;
-      const data = JSON.parse(raw);
-      if(Array.isArray(data)) rounds = data;
-    }catch(e){}
-  }
-  function saveState(){
-    try{
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(rounds));
-    }catch(e){}
-  }
-
   let youForcedByType = false;
 
   function escapeHtml(s){
@@ -1418,7 +1391,6 @@ toggleYouUI();
     }
 
     rounds.push({dealer, winner, type, water, lines});
-    saveState();
 
     // v11.4: New round defaults to NO 游金 (avoid leaking state to next round)
     try{
@@ -1433,7 +1405,7 @@ toggleYouUI();
 
   function removeRound(idx){
     rounds.splice(idx,1);
-    saveState();
+
     renderAll();
   }
   window.removeRound = removeRound;
@@ -1528,7 +1500,7 @@ return `
                 <span class="rWater">${r.water}水</span>
                 <span class="rDot">·</span>
                 <span class="rType">${escapeHtml(typeLabel(r.type))}</span>
-                ${hasYou ? '<span class="youBadge" aria-label="游金" title="游金"></span>' : ''}
+                ${hasYou ? '<span class="youBadge"><span class="youDot"></span>游金</span>' : ''}
               </div>
               <div class="rSub">莊家${fmtMoney(lookupAmount({type:r.type, water:r.water, winnerIsDealer:true}) || 0)}/平家${fmtMoney(lookupAmount({type:r.type, water:r.water, winnerIsDealer:false}) || 0)}</div>
             </div>
@@ -1611,7 +1583,7 @@ return `
   function resetAll(){
     rounds = [];
     renderSelectors();
-    saveState();
+
     renderAll();
     syncWaterByType();
     toggleYouUI();
@@ -1636,7 +1608,7 @@ return `
 
   $("resetBtn").addEventListener("click", resetAll);
   $("addRoundBtn").addEventListener("click", addRound);
-  $("clearRoundsBtn").addEventListener("click", ()=>{ rounds=[]; saveState(); renderAll(); });
+  $("clearRoundsBtn").addEventListener("click", ()=>{ rounds=[]; renderAll(); });
 
   $("youSel").addEventListener("change", toggleYouUI);
   $("winnerSel").addEventListener("change", ()=>{
@@ -1647,7 +1619,7 @@ return `
   initYouSegmented();
   updateYouPill();
   syncWaterByType();
-  loadState();
+
   toggleYouUI();
   renderAll();
 
