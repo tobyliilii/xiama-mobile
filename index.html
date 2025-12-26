@@ -1147,10 +1147,6 @@ input{
 
   let players = ["A","B","C","D"];
   let rounds = [];
-  // v11.6 dev: localStorage disabled
-  function loadState(){}
-  function saveState(){}
-
   }
 
   let youForcedByType = false;
@@ -1563,7 +1559,7 @@ return `
 
   $("resetBtn").addEventListener("click", resetAll);
   $("addRoundBtn").addEventListener("click", addRound);
-  $("clearRoundsBtn").addEventListener("click", ()=>{ rounds=[]; renderAll(); });
+  $("clearRoundsBtn").addEventListener("click", ()=>{ rounds=[]; saveState(); renderAll(); });
 
   $("youSel").addEventListener("change", toggleYouUI);
   $("winnerSel").addEventListener("change", ()=>{
