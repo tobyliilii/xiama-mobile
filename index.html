@@ -1111,6 +1111,24 @@ input{
   let players = ["A","B","C","D"];
   let rounds = [];
 
+  // ===== v11.2: Persist rounds across file/version (stable localStorage key) =====
+  const STORAGE_KEY = "xiama_rounds_v1";
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return;
+      const data = JSON.parse(raw);
+      if(Array.isArray(data)) rounds = data;
+    }catch(e){}
+  }
+  function saveState(){
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(rounds));
+    }catch(e){}
+  }
+
+  let youForcedByType = false;
+
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, (c)=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
   }
@@ -1214,7 +1232,7 @@ toggleYouUI();
 }
 
   function typeLabel(t){
-    return ({dao:"胡牌", zimo:"自摸", danyou:"單游", shuangyou:"雙游"}[t] || t);
+    return ({dao:"到（胡牌）", zimo:"自摸", danyou:"單游", shuangyou:"雙游"}[t] || t);
   }
 
   function syncWaterByType(){
@@ -1228,17 +1246,25 @@ toggleYouUI();
   if ((type === "danyou" || type === "shuangyou") && v < 1) v = 1;
   input.value = String(v);
 
-  // --- 單游/雙游：游金由贏法自動判斷（且每局獨立記錄） ---
+  // --- 單游/雙游：自動開啟游金 ---
   const isYouType = (type === "danyou" || type === "shuangyou");
 
-  // 仍保留隱藏 youSel 以相容舊 UI，但每次都會「明確重置」避免殘留狀態
   if (isYouType) {
-    $("youSel").value = "yes";
+    // 強制切到「有」
+    if ($("youSel").value !== "yes") $("youSel").value = "yes";
+
+    youForcedByType = true;
+// 避免手滑改回「無」
     $("youSel").disabled = true;
   } else {
-    $("youSel").value = "none";
-    $("youSel").disabled = false;
+    // 從單游/雙游切回來：解除強制
+    if (youForcedByType) {
+      $("youSel").disabled = false;
+      // 策略 B：保留使用者目前選擇（不動 value）
+      youForcedByType = false;
+    }
   }
+
   toggleYouUI();
   updateYouPill();
 }
@@ -1249,9 +1275,6 @@ toggleYouUI();
     const type = $("typeSel").value;
     const water = Number($("waterInput").value);
     const scale = 1;
-
-    // ✅ v12 data model: per-round youjinType (prevents state carry-over)
-    const youjinType = (type === "danyou") ? "single" : (type === "shuangyou") ? "double" : null;
 
     if ((type === "danyou" || type === "shuangyou") && water === 0){
       alert("單游/雙游的水=0 在水表是無效（—）。請選 1～12。");
@@ -1283,7 +1306,7 @@ toggleYouUI();
       });
     }
 
-    if (youjinType !== null) {
+    if ($("youSel").value === "yes") {
       const youWho = Number($("winnerSel").value);
       const youAmt = 10; // v5: fixed bonus, no manual input
 
@@ -1299,12 +1322,14 @@ toggleYouUI();
       }
     }
 
-    rounds.push({dealer, winner, type, water, youjinType, lines});
-renderAll();
+    rounds.push({dealer, winner, type, water, lines});
+    saveState();
+    renderAll();
   }
 
   function removeRound(idx){
     rounds.splice(idx,1);
+    saveState();
     renderAll();
   }
   window.removeRound = removeRound;
@@ -1371,22 +1396,23 @@ renderAll();
     }
 
     $("roundList").innerHTML = rounds.map((r,idx)=>{
-      // ✅ v12: 每局獨立 youjinType（單游/雙游才有游金）
-      const hasYou = (r.youjinType !== null);
+      const youLine = r.lines.find(L => L.role === "游金");
+      const youWho = youLine ? youLine.to : null;
 
       // 莊家永遠不顯示游金 badge（只顯示名字）
-      const dealerName = escapeHtml(players[r.dealer]);
+const dealerName = escapeHtml(players[r.dealer]);
 
-      // badge 永遠只在贏家旁邊顯示（單游/雙游＝贏家即游金者）
-      const winnerName = badgeIf(escapeHtml(players[r.winner]), hasYou);
+// badge 永遠只在贏家旁邊顯示（若游金者=贏家才顯示）
+const winnerName = badgeIf(escapeHtml(players[r.winner]), youWho === r.winner);
 
       const title = `第 ${idx+1} 局｜莊：${dealerName}｜贏：${winnerName}｜${typeLabel(r.type)}｜${r.water} 水`;
-const lines = r.lines.map(L=>{
+
+      const lines = r.lines.map(L=>{
         return `${escapeHtml(players[L.from])}（${escapeHtml(L.role)}） → ${escapeHtml(players[L.to])}：${fmtMoney(L.amount)} <span class="muted">(${escapeHtml(L.raw)})</span>`;
       }).join("<br>");
 
       
-      const hasYou = (r.youjinType !== null);
+      const hasYou = r.lines.some(L => L.role === "游金");
 return `
         <div class="card roundCard ${hasYou ? "isYoujin" : ""}">
           <div class="roundHeader">
@@ -1481,6 +1507,7 @@ return `
   function resetAll(){
     rounds = [];
     renderSelectors();
+    saveState();
     renderAll();
     syncWaterByType();
     toggleYouUI();
@@ -1505,7 +1532,7 @@ return `
 
   $("resetBtn").addEventListener("click", resetAll);
   $("addRoundBtn").addEventListener("click", addRound);
-  $("clearRoundsBtn").addEventListener("click", ()=>{ rounds=[]; renderAll(); });
+  $("clearRoundsBtn").addEventListener("click", ()=>{ rounds=[]; saveState(); renderAll(); });
 
   $("youSel").addEventListener("change", toggleYouUI);
   $("winnerSel").addEventListener("change", ()=>{
@@ -1516,6 +1543,7 @@ return `
   initYouSegmented();
   updateYouPill();
   syncWaterByType();
+  loadState();
   toggleYouUI();
   renderAll();
 
