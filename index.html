@@ -1092,6 +1092,113 @@ input{
   );
 }
 
+
+/* ===== PATCH vB4: Trash center + bigger sizes (desktop & mobile) ===== */
+.roundDelBtn{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  align-self:center !important;
+  padding:0 !important;
+  margin:0 !important;
+  line-height:0 !important;
+
+  width:76px !important;   /* desktop a bit bigger */
+  height:76px !important;
+  border-radius:20px !important;
+}
+.roundDelBtn svg{
+  display:block !important;
+  width:36px !important;
+  height:36px !important;
+  margin:0 !important;
+}
+
+/* Mobile: make it bigger + keep perfectly centered */
+@media (max-width:520px){
+  .roundDelBtn{
+    width:88px !important;
+    height:88px !important;
+    border-radius:24px !important;
+  }
+  .roundDelBtn svg{
+    width:42px !important;
+    height:42px !important;
+  }
+}
+
+
+/* ===== PATCH vB5: Desktop header vertical centering (trash truly centered) ===== */
+.roundHeader{
+  align-items:center !important;  /* override older flex-start */
+}
+.roundTitle{
+  padding-top:0 !important;
+  padding-bottom:0 !important;
+}
+
+
+/* ===== PATCH vB7: Pin trash button absolute center (desktop+mobile) ===== */
+.roundHeader{
+  position:relative !important;
+  align-items:stretch !important; /* let title define height */
+}
+.roundDelBtn{
+  position:absolute !important;
+  right:0 !important;
+  top:50% !important;
+  transform: translateY(-50%) !important;
+
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  padding:0 !important;
+  margin:0 !important;
+  line-height:0 !important;
+}
+
+/* keep icon dead-center */
+.roundDelBtn svg{ display:block !important; margin:0 !important; }
+
+/* sizing: desktop */
+.roundDelBtn{
+  width:76px !important;
+  height:76px !important;
+  border-radius:20px !important;
+}
+.roundDelBtn svg{
+  width:36px !important;
+  height:36px !important;
+}
+
+/* mobile sizing */
+@media (max-width:520px){
+  .roundDelBtn{
+    width:88px !important;
+    height:88px !important;
+    border-radius:24px !important;
+  }
+  .roundDelBtn svg{
+    width:42px !important;
+    height:42px !important;
+  }
+}
+
+
+/* ===== PATCH vB8: Center trash relative to WHOLE round card ===== */
+.roundCard{ position:relative !important; }
+.roundHeader{ position:static !important; } /* don't be positioning context */
+.roundDelBtn{
+  position:absolute !important;
+  right:24px !important;   /* a bit inset from card edge */
+  top:50% !important;      /* center within the entire card */
+  transform:translateY(-50%) !important;
+}
+@media (max-width:520px){
+  .roundDelBtn{ right:18px !important; }
+}
+
 </style>
 </head>
 
