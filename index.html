@@ -1476,6 +1476,20 @@ input{
   }
 }
 
+
+/* ===== FINAL: 玩家卡版面（桌機 4 / 手機 2x2） ===== */
+#namesRow.namesGrid{
+  display:grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap:14px !important;
+}
+@media (max-width:520px){
+  #namesRow.namesGrid{
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap:12px !important;
+  }
+}
+
 </style>
 </head>
 
