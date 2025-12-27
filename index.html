@@ -1782,6 +1782,42 @@ input{
   };
 
   let players = ["A","B","C","D"];
+
+const START_STACK = 100; // 每局每人起始 100
+
+function simulateGameState(){
+  // 用目前 rounds 重新模擬一遍（以已記錄的實付金額為準）
+  const n = players.length;
+  const remain = Array(n).fill(START_STACK);
+  let bustedIdx = null;
+
+  rounds.forEach(r=>{
+    r.lines.forEach(L=>{
+      // 保險封頂（避免 remain 變負）
+      const pay = Math.min(L.amount, remain[L.from]);
+      if (pay <= 0) return;
+      remain[L.from] -= pay;
+      remain[L.to]   += pay;
+    });
+    if (bustedIdx == null){
+      const idx = remain.findIndex(v => v <= 0);
+      if (idx !== -1) bustedIdx = idx;
+    }
+  });
+
+  return { remain, bustedIdx };
+}
+
+function setRoundLocked(isLocked, reasonText=""){
+  const btn = document.getElementById("addRoundBtn");
+  if(btn){
+    btn.disabled = !!isLocked;
+    btn.style.opacity = isLocked ? "0.55" : "";
+    btn.style.cursor = isLocked ? "not-allowed" : "";
+    btn.title = isLocked ? (reasonText || "本局已結算") : "";
+  }
+}
+
   let rounds = [];
   let youForcedByType = false;
 
@@ -1926,70 +1962,98 @@ toggleYouUI();
 }
 
   function addRound(){
-    const dealer = Number($("dealerSel").value);
-    const winner = Number($("winnerSel").value);
-    const type = $("typeSel").value;
-    const water = Number($("waterInput").value);
-    const scale = 1;
+  const st0 = simulateGameState();
+  if (st0.bustedIdx != null){
+    alert(`本局已結算：${players[st0.bustedIdx]} 已輸光（0）。請清空全部局數/開始新局。`);
+    setRoundLocked(true, "本局已結算");
+    return;
+  }
 
-    if ((type === "danyou" || type === "shuangyou") && water === 0){
-      alert("單游/雙游的水=0 在水表是無效（—）。請選 1～12。");
+  const dealer = Number($("dealerSel").value);
+  const winner = Number($("winnerSel").value);
+  const type = $("typeSel").value;
+  const water = Number($("waterInput").value);
+  const scale = 1;
+
+  if ((type === "danyou" || type === "shuangyou") && water === 0){
+    alert("單游/雙游的水=0 在水表是無效（—）。請選 1～12。");
+    return;
+  }
+
+  const remain = st0.remain.slice();
+  let lines = [];
+
+  for (let i=0;i<players.length;i++){
+    if (i === winner) continue;
+
+    const raw = lookupAmount({
+      type,
+      water,
+      winnerIsDealer: (winner === dealer)
+    });
+
+    if (raw == null){
+      alert("查表失敗：請確認贏法與水數是否有效。");
       return;
     }
 
-    let lines = [];
+    const owed = raw * scale;
+    const pay = Math.min(owed, remain[i]);
 
-    for (let i=0;i<players.length;i++){
-      if (i === winner) continue;
+    if (pay > 0){
+      remain[i] -= pay;
+      remain[winner] += pay;
 
-      const raw = lookupAmount({
-  type,
-  water,
-  winnerIsDealer: (winner === dealer)
-});
-
-      if (raw == null){
-        alert("查表失敗：請確認贏法與水數是否有效。");
-        return;
-      }
-      const amount = raw * scale;
       lines.push({
         from:i,
         to:winner,
-        amount,
-        raw:`查表 ${raw}`,
+        amount: pay,
+        raw: (pay < owed) ? `查表 ${raw}（封頂 ${pay}）` : `查表 ${raw}`,
         role:(i===dealer ? "庄" : "平")
       });
     }
-
-    if ($("youSel").value === "yes") {
-      const youWho = Number($("winnerSel").value);
-      const youAmt = 10; // v5: fixed bonus, no manual input
-
-      for (let i = 0; i < players.length; i++) {
-        if (i === youWho) continue;
-        lines.push({
-          from: i,
-          to: youWho,
-          amount: youAmt,
-          raw: `游金 +${youAmt}`,
-          role: "游金"
-        });
-      }
-    }
-
-    rounds.push({dealer, winner, type, water, lines});
-
-    // v11.4: New round defaults to NO 游金 (avoid leaking state to next round)
-    try{
-      if (typeof setYouValue === "function") setYouValue("no");
-      else if ($("youSel")) $("youSel").value = "no";
-      if (typeof toggleYouUI === "function") toggleYouUI();
-      if (typeof updateYouPill === "function") updateYouPill();
-    }catch(e){}
-
-    renderAll();
   }
+
+  if ($("youSel") && $("youSel").value === "yes") {
+    const youWho = Number($("winnerSel").value);
+    const youAmt = 10;
+
+    for (let i = 0; i < players.length; i++) {
+      if (i === youWho) continue;
+
+      const pay = Math.min(youAmt, remain[i]);
+      if (pay <= 0) continue;
+
+      remain[i] -= pay;
+      remain[youWho] += pay;
+
+      lines.push({
+        from: i,
+        to: youWho,
+        amount: pay,
+        raw: (pay < youAmt) ? `游金 +${youAmt}（封頂 ${pay}）` : `游金 +${youAmt}`,
+        role: "游金"
+      });
+    }
+  }
+
+  rounds.push({dealer, winner, type, water, lines});
+
+  const bustedIdx = remain.findIndex(v => v <= 0);
+  if (bustedIdx !== -1){
+    setRoundLocked(true, `本局已結算：${players[bustedIdx]} 已輸光`);
+  }
+
+  try{
+    if (typeof setYouValue === "function") setYouValue("no");
+    else if ($("youSel")) $("youSel").value = "no";
+    if (typeof toggleYouUI === "function") toggleYouUI();
+    if (typeof updateYouPill === "function") updateYouPill();
+  }catch(e){}
+
+  renderAll();
+  try{ if (typeof flashRecordBtn === "function") flashRecordBtn(); }catch(e){}
+}
 
   function removeRound(idx){
     rounds.splice(idx,1);
@@ -1999,32 +2063,40 @@ toggleYouUI();
   window.removeRound = removeRound;
 
   function computeTotals(){
-  const totals = Array(players.length).fill(0);
-  const youRecvCount = Array(players.length).fill(0); // ✅ 每局游金事件次數
-  const youRecvAmt = Array(players.length).fill(0);   // ✅ 游金總額（照樣加總）
+  const n = players.length;
+  const remain = Array(n).fill(START_STACK);
+  const youRecvCount = Array(n).fill(0);
+  const youRecvAmt = Array(n).fill(0);
+
+  let bustedIdx = null;
 
   rounds.forEach(r=>{
-    // 這局已經幫哪些人算過「游金事件次數」了（避免同局三筆被算三次）
     const countedYouThisRound = new Set();
 
     r.lines.forEach(L=>{
-      totals[L.from] -= L.amount;
-      totals[L.to]   += L.amount;
+      const pay = Math.min(L.amount, remain[L.from]);
+      if (pay <= 0) return;
+
+      remain[L.from] -= pay;
+      remain[L.to]   += pay;
 
       if (L.role === "游金") {
-        // 金額：每筆都加（B/C/D 各 +10，總共 +30）
-        youRecvAmt[L.to] += L.amount;
-
-        // 次數：同一局同一個收款人只算 1 次
+        youRecvAmt[L.to] += pay;
         if (!countedYouThisRound.has(L.to)) {
           youRecvCount[L.to] += 1;
           countedYouThisRound.add(L.to);
         }
       }
     });
+
+    if (bustedIdx == null){
+      const idx = remain.findIndex(v => v <= 0);
+      if (idx !== -1) bustedIdx = idx;
+    }
   });
 
-  return { totals, youRecvCount, youRecvAmt };
+  const totals = remain.map(v => Math.round((v - START_STACK)*100)/100);
+  return { totals, youRecvCount, youRecvAmt, remain, bustedIdx };
 }
 
   function settleTransfers(totals){
@@ -2112,7 +2184,7 @@ return `
   }
 
   function renderTotalsAndTransfers(){
-  const { totals, youRecvCount, youRecvAmt } = computeTotals();
+  const { totals, youRecvCount, youRecvAmt, remain, bustedIdx } = computeTotals();
   const sum = Math.round(totals.reduce((a,b)=>a+b,0)*100)/100;
 
   const transfers = settleTransfers(totals);
@@ -2194,13 +2266,17 @@ return `
   }
 
   const warnHtml = (Math.abs(sum) < 0.01) ? "" : `<div class="warn">警告：總和不為 0（目前 ${fmtMoney(sum)}）</div>`;
+  const settleHtml = (bustedIdx == null) ? "" : `<div class="ok">本局結算：${escapeHtml(players[bustedIdx])} 已輸光（0）</div>`;
 
   $("totalsArea").innerHTML = `
     ${warnHtml}
+    ${settleHtml}
     <div class="settleGrid">
       ${cards.join("")}
     </div>
   `;
+
+  setRoundLocked(bustedIdx != null, bustedIdx != null ? `本局已結算：${players[bustedIdx]} 已輸光` : "");
 
   $("transfersArea").innerHTML = "";
 }
