@@ -1490,6 +1490,59 @@ input{
   }
 }
 
+
+
+/* ===== FINAL v2: 總計改成玩家卡（桌機 4 / 手機 2x2），轉帳清單維持列表 ===== */
+.totalsGrid{
+  display:grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap:14px;
+  margin-top:14px;
+}
+@media (max-width:520px){
+  .totalsGrid{ grid-template-columns: repeat(2, minmax(0, 1fr)); gap:12px; }
+}
+.playerTotalCard{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,0)),
+    var(--surface);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:22px;
+  padding:16px 16px;
+  box-shadow: var(--shadow-small);
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  min-width:0;
+}
+.playerTotalTop{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:10px;
+}
+.playerName{
+  font-weight:900;
+  font-size:16px;
+  letter-spacing:.2px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.playerAmt{
+  font-weight:900;
+  font-size:18px;
+  letter-spacing:.2px;
+  text-align:right;
+}
+.playerMeta{
+  color: rgba(231,238,252,.55);
+  font-size:12px;
+  line-height:1.35;
+}
+.playerAmt.pos{ color: rgba(61,220,132,.95); }
+.playerAmt.neg{ color: rgba(255,107,107,.95); }
+
 </style>
 </head>
 
@@ -1941,15 +1994,29 @@ return `
 }).join("");
 
     $("totalsArea").innerHTML = `
-      <div class="${Math.abs(sum) < 0.01 ? "ok" : "warn"}">
-        ${Math.abs(sum) < 0.01 ? "總和 - 收支平衡" : `警告：總和不為 0（目前 ${fmtMoney(sum)}）`}
-      </div>
-      <table>
-        <thead><tr><th>玩家</th><th>總金額</th></tr></thead>
-        <tbody>${totalsRows}</tbody>
-      </table>
-    `;
+  <div class="${Math.abs(sum) < 0.01 ? "ok" : "warn"}">
+    ${Math.abs(sum) < 0.01 ? "總和 - 收支平衡" : `警告：總和不為 0（目前 ${fmtMoney(sum)}）`}
+  </div>
 
+  <div class="totalsGrid">
+    ${players.map((_,i)=>{
+      const amt = totals[i];
+      const hasYou = youRecvCount[i] > 0 && Math.abs(youRecvAmt[i]) > 0.000001;
+      const meta = hasYou ? `含游金 +${fmtMoney(youRecvAmt[i])} / ${youRecvCount[i]}次` : "";
+      const cls = (amt >= 0) ? "pos" : "neg";
+      const sign = (amt >= 0) ? "+" : "";
+      return `
+        <div class="playerTotalCard">
+          <div class="playerTotalTop">
+            <div class="playerName">${escapeHtml(players[i])}</div>
+            <div class="playerAmt ${cls} mono">${sign}${fmtMoney(amt)}</div>
+          </div>
+          ${meta ? `<div class="playerMeta">${meta}</div>` : `<div class="playerMeta">&nbsp;</div>`}
+        </div>
+      `;
+    }).join("")}
+  </div>
+`;
     const transfers = settleTransfers(totals);
     if (!transfers.length){
       $("transfersArea").innerHTML = `<div class="muted">無。</div>`;
