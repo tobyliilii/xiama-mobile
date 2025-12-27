@@ -2076,10 +2076,22 @@ toggleYouUI();
 }
 
   function removeRound(idx){
-    rounds.splice(idx,1);
+  rounds.splice(idx,1);
 
-    renderAll();
-  }
+  // ✅ 刪除單局後：同步 UI 狀態，避免游金 pill / youSel 不一致導致 badge 偶發失效
+  try{ syncWaterByType(); }catch(e){}
+  try{ toggleYouUI(); }catch(e){}
+  try{ updateYouPill(); }catch(e){}
+  try{ if (typeof syncYouSegmented === "function") syncYouSegmented(); }catch(e){}
+
+  // ✅ 刪除後可能解除「輸光結算」，重新判斷鎖定
+  try{
+    const st = simulateGameState();
+    setRoundLocked(st.bustedIdx != null, st.bustedIdx != null ? `本局已結算：${players[st.bustedIdx]} 已輸光` : "");
+  }catch(e){}
+
+  renderAll();
+}
   window.removeRound = removeRound;
 
   function computeTotals(){
