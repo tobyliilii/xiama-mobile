@@ -194,6 +194,39 @@
       box-shadow: -6px -6px 12px rgba(255,255,255,.04), 6px 6px 12px rgba(0,0,0,.45);
     }
 
+    .streakBadge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:2px 10px;
+      border-radius:999px;
+      font-size:12px;
+      background:rgba(112,168,255,.10);
+      color:#a6d1ff;
+      border:1px solid rgba(112,168,255,.22);
+      margin-left:8px;
+      line-height:1.7;
+      vertical-align:middle;
+      box-shadow: -6px -6px 12px rgba(255,255,255,.04), 6px 6px 12px rgba(0,0,0,.45);
+      white-space:nowrap;
+    }
+    .streakMul{ opacity:.95; }
+
+    .streakMini{
+      display:inline-flex;
+      align-items:center;
+      padding:1px 8px;
+      border-radius:999px;
+      font-size:12px;
+      background:rgba(112,168,255,.08);
+      color:rgba(166,209,255,.95);
+      border:1px solid rgba(112,168,255,.16);
+      margin-left:8px;
+      line-height:1.6;
+      vertical-align:middle;
+      white-space:nowrap;
+    }
+
     .roundHeader{
       display:flex;
       justify-content:space-between;
@@ -1709,7 +1742,24 @@ input{
 
     <div class="card">
       <div class="namesHeader">
-        <div id="namesRow" class="namesGrid"></div>
+        <div id="namesRow" class="namesGrid">
+          <div>
+            <label>玩家 1</label>
+            <input type="text" value="A" data-name="0">
+          </div>
+          <div>
+            <label>玩家 2</label>
+            <input type="text" value="B" data-name="1">
+          </div>
+          <div>
+            <label>玩家 3</label>
+            <input type="text" value="C" data-name="2">
+          </div>
+          <div>
+            <label>玩家 4</label>
+            <input type="text" value="D" data-name="3">
+          </div>
+        </div>
         <button id="resetBtn" class="resetBtn">換人</button>
       </div>
     </div>
@@ -1717,13 +1767,23 @@ input{
     <div class="card">
       <div class="row formRow">
         <div>
-          <label>莊家</label>
-          <select id="dealerSel"></select>
+          <label>莊家 <span id="streakBadge" class="streakBadge" style="display:none"></span></label>
+          <select id="dealerSel">
+            <option value="0">A</option>
+            <option value="1">B</option>
+            <option value="2">C</option>
+            <option value="3">D</option>
+          </select>
         </div>
 
         <div>
           <label>贏家</label>
-          <select id="winnerSel"></select>
+          <select id="winnerSel">
+            <option value="0">A</option>
+            <option value="1">B</option>
+            <option value="2">C</option>
+            <option value="3">D</option>
+          </select>
         </div>
 
         <div>
@@ -1804,27 +1864,139 @@ input{
 
 const START_STACK = 100; // 每局每人起始 100
 
-function simulateGameState(){
-  // 用目前 rounds 重新模擬一遍（以已記錄的實付金額為準）
+function computeAllRoundsDetailed(){
   const n = players.length;
-  const remain = Array(n).fill(START_STACK);
+  let remain = Array(n).fill(START_STACK);
   let bustedIdx = null;
 
-  rounds.forEach(r=>{
-    r.lines.forEach(L=>{
-      // 保險封頂（避免 remain 變負）
-      const pay = Math.min(L.amount, remain[L.from]);
-      if (pay <= 0) return;
-      remain[L.from] -= pay;
-      remain[L.to]   += pay;
-    });
-    if (bustedIdx == null){
-      const idx = remain.findIndex(v => v <= 0);
-      if (idx !== -1) bustedIdx = idx;
-    }
-  });
+  const youRecvCount = Array(n).fill(0);
+  const youRecvAmt = Array(n).fill(0);
 
-  return { remain, bustedIdx };
+  const detailedRounds = [];
+
+  // 對「下一把」的預期（用於判斷手動改莊 -> 視為新一段）
+  let expectedDealer = null;
+  let expectedStreak = 1;
+
+  for (let idx = 0; idx < rounds.length; idx++){
+    const r0 = rounds[idx];
+
+    // 本把連莊：第一把固定 1；之後若莊家被手動改掉（與預期不同）→ 連莊回到 1
+    if (idx === 0){
+      expectedDealer = r0.dealer;
+      expectedStreak = 1;
+    } else {
+      if (r0.dealer !== expectedDealer){
+        expectedDealer = r0.dealer;
+        expectedStreak = 1;
+      }
+    }
+
+    const dealerStreak = expectedStreak;
+    const multiplier = Math.pow(2, Math.max(0, dealerStreak - 1));
+
+    const lines = [];
+
+    // 主結算：每位輸家付給贏家（輸家若為莊家或贏家為莊家 → 用莊家價）
+    for (let i = 0; i < n; i++){
+      if (i === r0.winner) continue;
+
+      const dealerRate = (r0.winner === r0.dealer) || (i === r0.dealer);
+      const base = lookupAmount({
+        type: r0.type,
+        water: r0.water,
+        dealerRate
+      });
+
+      if (base == null) continue;
+
+      // 連莊倍數只套用在「涉及莊家」的那一份金額：
+      // - 莊家贏：所有輸家都按莊價，並套用倍數
+      // - 莊家沒贏：只有莊家那位輸家套用倍數，其他照平家價
+      const m = dealerRate ? multiplier : 1;
+      const owed = base * m;
+      const pay = Math.min(owed, remain[i]);
+      if (pay <= 0) continue;
+
+      remain[i] -= pay;
+      remain[r0.winner] += pay;
+
+      let raw = (m > 1)
+        ? `查表 ${base}×${m}（連莊${dealerStreak-1}）`
+        : `查表 ${base}`;
+      if (pay < owed) raw += `（封頂 ${pay}）`;
+
+      lines.push({
+        from: i,
+        to: r0.winner,
+        amount: pay,
+        raw,
+        role: (dealerRate ? "庄" : "平")
+      });
+    }
+
+    // 游金：固定由贏家收（10），不套用連莊倍數
+    if (r0.youSelected){
+      const youWho = r0.winner;
+      const youAmt = 10;
+      let gotAny = false;
+
+      for (let i = 0; i < n; i++){
+        if (i === youWho) continue;
+
+        const pay = Math.min(youAmt, remain[i]);
+        if (pay <= 0) continue;
+
+        remain[i] -= pay;
+        remain[youWho] += pay;
+        gotAny = true;
+
+        let raw = `游金 +${youAmt}`;
+        if (pay < youAmt) raw += `（封頂 ${pay}）`;
+
+        lines.push({
+          from: i,
+          to: youWho,
+          amount: pay,
+          raw,
+          role: "游金"
+        });
+
+        youRecvAmt[youWho] += pay;
+      }
+
+      if (gotAny) youRecvCount[youWho] += 1;
+    }
+
+    if (bustedIdx == null){
+      const idx0 = remain.findIndex(v => v <= 0);
+      if (idx0 !== -1) bustedIdx = idx0;
+    }
+
+    // 推進「下一把」莊家/連莊
+    if (r0.winner === r0.dealer){
+      expectedDealer = r0.dealer;
+      expectedStreak = dealerStreak + 1;
+    } else {
+      expectedDealer = r0.winner;
+      expectedStreak = 1;
+    }
+
+    detailedRounds.push(Object.assign({}, r0, { dealerStreak, multiplier, lines }));
+  }
+
+  const totals = remain.map(v => Math.round((v - START_STACK) * 100) / 100);
+
+  // 若尚未記錄任何局：下一把莊家 = UI 當前選擇；連莊固定 1
+  const nextDealer = rounds.length ? expectedDealer : Number((document.getElementById("dealerSel") && document.getElementById("dealerSel").value) ? document.getElementById("dealerSel").value : 0);
+  const nextStreak = rounds.length ? expectedStreak : 1;
+
+  return { detailedRounds, totals, remain, bustedIdx, nextDealer, nextStreak, youRecvCount, youRecvAmt };
+}
+
+function simulateGameState(){
+  const st = computeAllRoundsDetailed();
+  return { remain: st.remain, bustedIdx: st.bustedIdx };
 }
 
 function setRoundLocked(isLocked, reasonText=""){
@@ -1840,6 +2012,10 @@ function setRoundLocked(isLocked, reasonText=""){
   let rounds = [];
   let youForcedByType = false;
 
+  // 連莊：是否手動改過「下一把莊家」
+  let dealerManualOverride = false;
+  let suppressDealerChange = false;
+
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, (c)=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
   }
@@ -1850,6 +2026,58 @@ function setRoundLocked(isLocked, reasonText=""){
   function buildOptions(sel){
     sel.innerHTML = players.map((p,i)=>`<option value="${i}">${escapeHtml(p)}</option>`).join("");
   }
+
+  function streakMultiplier(streak){
+    const s = Math.max(1, Number(streak) || 1);
+    return Math.pow(2, s - 1);
+  }
+
+  function updateStreakBadge(streak){
+    const el = $("streakBadge");
+    if (!el) return;
+    const s = Math.max(1, Number(streak) || 1);
+    const mul = streakMultiplier(s);
+    const carry = Math.max(0, s - 1);
+
+    // 起莊（第一把/新一段）不顯示徽章；只有連莊才顯示：連1（2倍）、連2（4倍）...
+    if (carry === 0){
+      el.style.display = "none";
+      el.innerHTML = "";
+      return;
+    }
+
+    el.style.display = "inline-flex";
+    el.innerHTML = `連${carry}<span class="streakMul">（${mul}倍）</span>`;
+  }
+
+  function syncNextRoundUI(){
+    const dealerSel = $("dealerSel");
+    if (!dealerSel) return;
+
+    // 尚未記錄任何局：第一把連莊永遠是 1
+    if (!rounds.length){
+      updateStreakBadge(1);
+      return;
+    }
+
+    const st = computeAllRoundsDetailed();
+
+    if (!dealerManualOverride){
+      const expectedDealer = st.nextDealer;
+      const expectedStreak = st.nextStreak;
+
+      if (Number(dealerSel.value || 0) !== expectedDealer){
+        suppressDealerChange = true;
+        dealerSel.value = String(expectedDealer);
+        suppressDealerChange = false;
+      }
+      updateStreakBadge(expectedStreak);
+    } else {
+      // 手動改莊：視為新一段
+      updateStreakBadge(1);
+    }
+  }
+
 
   function renderNames(){
     if (!Array.isArray(players) || players.length !== 4) players = ["A","B","C","D"];
@@ -1899,7 +2127,8 @@ function setRoundLocked(isLocked, reasonText=""){
   function updateYouPill(){
     const pill = $("youPill");
     if (!pill) return;
-    const v = $("youSel")?.value;
+    const youSel = $("youSel");
+    const v = youSel ? youSel.value : "none";
     pill.textContent = (v === "yes") ? "有" : "無";
     pill.classList.toggle("is-on", v === "yes");
   }
@@ -1929,15 +2158,24 @@ function setRoundLocked(isLocked, reasonText=""){
 
 
   function renderSelectors(){
-    buildOptions($("dealerSel"));
-    buildOptions($("winnerSel"));
-$("dealerSel").value = "0";
-    $("winnerSel").value = "0";
-toggleYouUI();
+    const dealerSel = $("dealerSel");
+    const winnerSel = $("winnerSel");
+    const oldDealer = (dealerSel && dealerSel.value != null) ? dealerSel.value : "0";
+    const oldWinner = (winnerSel && winnerSel.value != null) ? winnerSel.value : "0";
+
+    buildOptions(dealerSel);
+    buildOptions(winnerSel);
+
+    // 盡量保留目前選擇（避免 iOS 檔案預覽或重新渲染時變成空白）
+    dealerSel.value = (dealerSel.querySelector(`option[value="${oldDealer}"]`) ? oldDealer : "0");
+    winnerSel.value = (winnerSel.querySelector(`option[value="${oldWinner}"]`) ? oldWinner : "0");
+
+    toggleYouUI();
   }
 
   function lookupAmount({ type, water, dealerRate }){
-  const row = LOOKUP[type]?.[water];
+  const t = LOOKUP[type];
+  const row = t ? t[water] : null;
   if (!row) return null;
   return dealerRate ? row["庄"] : row["平"];
 }
@@ -1992,81 +2230,34 @@ toggleYouUI();
   const winner = Number($("winnerSel").value);
   const type = $("typeSel").value;
   const water = Number($("waterInput").value);
-  const scale = 1;
 
   if ((type === "danyou" || type === "shuangyou") && water === 0){
     alert("單游/雙游的水=0 在水表是無效（—）。請選 1～12。");
     return;
   }
 
-  const remain = st0.remain.slice();
+  // 基本查表驗證（避免後續渲染計算失敗）
+  const t1 = lookupAmount({ type, water, dealerRate: true });
+  const t2 = lookupAmount({ type, water, dealerRate: false });
+  if (t1 == null || t2 == null){
+    alert("查表失敗：請確認贏法與水數是否有效。");
+    return;
+  }
+
   const youSelected = ($("youSel") && $("youSel").value === "yes");
-  let lines = [];
 
-  for (let i=0;i<players.length;i++){
-    if (i === winner) continue;
+  rounds.push({ dealer, winner, type, water, youSelected });
 
-    const raw = lookupAmount({
-      type,
-      water,
-      dealerRate: (winner === dealer) || (i === dealer)
-    });
+  // 記錄後：回到自動同步「下一把莊家 + 連莊」
+  dealerManualOverride = false;
 
-    if (raw == null){
-      alert("查表失敗：請確認贏法與水數是否有效。");
-      return;
-    }
-
-    const owed = raw * scale;
-    const pay = Math.min(owed, remain[i]);
-
-    if (pay > 0){
-      remain[i] -= pay;
-      remain[winner] += pay;
-
-      lines.push({
-        from:i,
-        to:winner,
-        amount: pay,
-        raw: (pay < owed) ? `查表 ${raw}（封頂 ${pay}）` : `查表 ${raw}`,
-        role:(i===dealer ? "庄" : "平")
-      });
-    }
-  }
-
-  if (youSelected) {
-    const youWho = Number($("winnerSel").value);
-    const youAmt = 10;
-
-    for (let i = 0; i < players.length; i++) {
-      if (i === youWho) continue;
-
-      const pay = Math.min(youAmt, remain[i]);
-      if (pay <= 0) continue;
-
-      remain[i] -= pay;
-      remain[youWho] += pay;
-
-      lines.push({
-        from: i,
-        to: youWho,
-        amount: pay,
-        raw: (pay < youAmt) ? `游金 +${youAmt}（封頂 ${pay}）` : `游金 +${youAmt}`,
-        role: "游金"
-      });
-    }
-  }
-
-  rounds.push({dealer, winner, type, water, lines, youSelected});
-
-  const bustedIdx = remain.findIndex(v => v <= 0);
-  if (bustedIdx !== -1){
-    setRoundLocked(true, `本局已結算：${players[bustedIdx]} 已輸光`);
-  }
-
+  // ✅ 游金預設回到「無」（但單游/雙游會在 syncWaterByType() 內強制為「有」）
   try{
-    if (typeof setYouValue === "function") setYouValue("none");
-    else if ($("youSel")) $("youSel").value = "none";
+    const isYouType = (type === "danyou" || type === "shuangyou");
+    if (!isYouType){
+      if (typeof setYouValue === "function") setYouValue("none");
+      else if ($("youSel")) $("youSel").value = "none";
+    }
     if (typeof toggleYouUI === "function") toggleYouUI();
     if (typeof updateYouPill === "function") updateYouPill();
   }catch(e){}
@@ -2075,8 +2266,11 @@ toggleYouUI();
   try{ if (typeof flashRecordBtn === "function") flashRecordBtn(); }catch(e){}
 }
 
-  function removeRound(idx){
+function removeRound(idx){
   rounds.splice(idx,1);
+
+  // 刪除後：回到自動同步（下一把莊家/連莊重新計算）
+  dealerManualOverride = false;
 
   // ✅ 刪除單局後：同步 UI 狀態，避免游金 pill / youSel 不一致導致 badge 偶發失效
   try{ syncWaterByType(); }catch(e){}
@@ -2095,43 +2289,17 @@ toggleYouUI();
   window.removeRound = removeRound;
 
   function computeTotals(){
-  const n = players.length;
-  const remain = Array(n).fill(START_STACK);
-  const youRecvCount = Array(n).fill(0);
-  const youRecvAmt = Array(n).fill(0);
-
-  let bustedIdx = null;
-
-  rounds.forEach(r=>{
-    const countedYouThisRound = new Set();
-
-    r.lines.forEach(L=>{
-      const pay = Math.min(L.amount, remain[L.from]);
-      if (pay <= 0) return;
-
-      remain[L.from] -= pay;
-      remain[L.to]   += pay;
-
-      if (L.role === "游金") {
-        youRecvAmt[L.to] += pay;
-        if (!countedYouThisRound.has(L.to)) {
-          youRecvCount[L.to] += 1;
-          countedYouThisRound.add(L.to);
-        }
-      }
-    });
-
-    if (bustedIdx == null){
-      const idx = remain.findIndex(v => v <= 0);
-      if (idx !== -1) bustedIdx = idx;
-    }
-  });
-
-  const totals = remain.map(v => Math.round((v - START_STACK)*100)/100);
-  return { totals, youRecvCount, youRecvAmt, remain, bustedIdx };
+  const st = computeAllRoundsDetailed();
+  return {
+    totals: st.totals,
+    youRecvCount: st.youRecvCount,
+    youRecvAmt: st.youRecvAmt,
+    remain: st.remain,
+    bustedIdx: st.bustedIdx
+  };
 }
 
-  function settleTransfers(totals){
+function settleTransfers(totals){
     const creditors = [];
     const debtors = [];
     totals.forEach((amt,i)=>{
@@ -2163,38 +2331,54 @@ toggleYouUI();
       return;
     }
 
-    $("roundList").innerHTML = rounds.map((r,idx)=>{
+    const st = computeAllRoundsDetailed();
+    const rr = st.detailedRounds;
+
+    $("roundList").innerHTML = rr.map((r,idx)=>{
       const youLine = r.lines.find(L => L.role === "游金");
       const youWho = youLine ? youLine.to : null;
 
-      // 莊家永遠不顯示游金 badge（只顯示名字）
-const dealerName = escapeHtml(players[r.dealer]);
-
-// badge 永遠只在贏家旁邊顯示（若游金者=贏家才顯示）
-const winnerName = badgeIf(escapeHtml(players[r.winner]), youWho === r.winner);
-
-      const title = `第 ${idx+1} 局｜莊：${dealerName}｜贏：${winnerName}｜${typeLabel(r.type)}｜${r.water} 水`;
+      const hasYou = !!r.youSelected || r.lines.some(L => L.role === "游金");
 
       const lines = r.lines.map(L=>{
         return `${escapeHtml(players[L.from])}（${escapeHtml(L.role)}） → ${escapeHtml(players[L.to])}：${fmtMoney(L.amount)} <span class="muted">(${escapeHtml(L.raw)})</span>`;
       }).join("<br>");
 
-      
-      const hasYou = !!r.youSelected || r.lines.some(L => L.role === "游金");
-return `
+      const baseDealer = lookupAmount({type:r.type, water:r.water, dealerRate:true}) || 0;
+      const baseCommon = lookupAmount({type:r.type, water:r.water, dealerRate:false}) || 0;
+      const mul = r.multiplier || 1;
+
+      const carry = Math.max(0, (r.dealerStreak || 1) - 1);
+// 起莊不顯示；只有連莊才顯示：連1（2倍）、連2（4倍）...
+const streakText = (carry > 0) ? `連${carry}（${mul}倍）` : "";
+
+      let sub = "";
+      if (r.winner === r.dealer){
+        // 莊家贏：全員都按莊家價（並套用連莊倍數）
+        sub = `莊家${fmtMoney(baseDealer*mul)}/平家${fmtMoney(baseDealer*mul)}`;
+      } else {
+        // 莊家沒贏：只有莊家那份套用倍數，其他照平家價
+        sub = `莊家${fmtMoney(baseDealer*mul)}/平家${fmtMoney(baseCommon)}`;
+      }
+
+      return `
         <div class="card roundCard ${hasYou ? "isYoujin" : ""}">
           <div class="roundHeader">
             <div class="roundTitle">
-              <div class="rTop"><span class="rIdx">${idx+1}.</span> <span class="rDealer">莊家:${escapeHtml(players[r.dealer])}</span></div>
+              <div class="rTop">
+                <span class="rIdx">${idx+1}.</span>
+                <span class="rDealer">莊家:${escapeHtml(players[r.dealer])}</span>
+                ${streakText ? `<span class="streakMini">${streakText}</span>` : ""}
+              </div>
               <div class="rMain">
-                <span class="rWinner">${escapeHtml(players[r.winner])}</span>
+                <span class="rWinner">${badgeIf(escapeHtml(players[r.winner]), youWho === r.winner)}</span>
                 <span class="rSep">-</span>
                 <span class="rWater">${r.water}水</span>
                 <span class="rDot">·</span>
                 <span class="rType">${escapeHtml(typeLabel(r.type))}</span>
                 ${hasYou ? '<span class="youBadge"><span class="youDot"></span>游金</span>' : ''}
               </div>
-              <div class="rSub">莊家${fmtMoney(lookupAmount({type:r.type, water:r.water, dealerRate:true}) || 0)}/平家${fmtMoney(lookupAmount({type:r.type, water:r.water, dealerRate:false}) || 0)}</div>
+              <div class="rSub">${sub}</div>
             </div>
 
             <button class="roundDelBtn" onclick="removeRound(${idx})" aria-label="刪除本局" title="刪除本局">
@@ -2212,10 +2396,11 @@ return `
 
           <div class="mono roundLines roundLinesDesktop">${lines}</div>
         </div>
-      `;}).join("");
+      `;
+    }).join("");
   }
 
-  function renderTotalsAndTransfers(){
+function renderTotalsAndTransfers(){
   const { totals, youRecvCount, youRecvAmt, remain, bustedIdx } = computeTotals();
   const sum = Math.round(totals.reduce((a,b)=>a+b,0)*100)/100;
 
@@ -2327,12 +2512,14 @@ return `
   $("transfersArea").innerHTML = "";
 }
   function renderAll(){
+    syncNextRoundUI();
     renderRoundList();
     renderTotalsAndTransfers();
   }
 
   function resetAll(){
   rounds = [];
+  dealerManualOverride = false;
   renderSelectors();
 
   // ✅ 換人/重開：回到「胡牌」，解除單游/雙游的游金強制
@@ -2378,8 +2565,31 @@ return `
 
   $("resetBtn").addEventListener("click", resetAll);
   $("addRoundBtn").addEventListener("click", addRound);
+  $("dealerSel").addEventListener("change", ()=>{
+    if (suppressDealerChange) return;
+
+    // 第一把：連莊固定 1（選誰當莊都算新一段）
+    if (!rounds.length){
+      dealerManualOverride = false;
+      updateStreakBadge(1);
+      return;
+    }
+
+    const st = computeAllRoundsDetailed();
+    const selected = Number($("dealerSel").value || 0);
+
+    if (selected === st.nextDealer){
+      dealerManualOverride = false;
+      updateStreakBadge(st.nextStreak);
+    } else {
+      dealerManualOverride = true;
+      updateStreakBadge(1);
+    }
+  });
+
   $("clearRoundsBtn").addEventListener("click", ()=>{
   rounds = [];
+  dealerManualOverride = false;
 
   // ✅ 清空後：回到「胡牌」，解除單游/雙游的游金強制
   try{
