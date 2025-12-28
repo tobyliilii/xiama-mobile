@@ -1936,10 +1936,10 @@ $("dealerSel").value = "0";
 toggleYouUI();
   }
 
-  function lookupAmount({ type, water, winnerIsDealer }){
+  function lookupAmount({ type, water, dealerRate }){
   const row = LOOKUP[type]?.[water];
   if (!row) return null;
-  return winnerIsDealer ? row["庄"] : row["平"];
+  return dealerRate ? row["庄"] : row["平"];
 }
 
   function typeLabel(t){
@@ -2009,7 +2009,7 @@ toggleYouUI();
     const raw = lookupAmount({
       type,
       water,
-      winnerIsDealer: (winner === dealer)
+      dealerRate: (winner === dealer) || (i === dealer)
     });
 
     if (raw == null){
@@ -2194,7 +2194,7 @@ return `
                 <span class="rType">${escapeHtml(typeLabel(r.type))}</span>
                 ${hasYou ? '<span class="youBadge"><span class="youDot"></span>游金</span>' : ''}
               </div>
-              <div class="rSub">莊家${fmtMoney(lookupAmount({type:r.type, water:r.water, winnerIsDealer:true}) || 0)}/平家${fmtMoney(lookupAmount({type:r.type, water:r.water, winnerIsDealer:false}) || 0)}</div>
+              <div class="rSub">莊家${fmtMoney(lookupAmount({type:r.type, water:r.water, dealerRate:true}) || 0)}/平家${fmtMoney(lookupAmount({type:r.type, water:r.water, dealerRate:false}) || 0)}</div>
             </div>
 
             <button class="roundDelBtn" onclick="removeRound(${idx})" aria-label="刪除本局" title="刪除本局">
