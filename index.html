@@ -2438,6 +2438,33 @@ body.mobile-preview .app{
 /* tighten vertical rhythm a touch */
 .rWinnerOnly{ margin-top:8px !important; }
 
+
+
+/* ===== PATCH v6.2: Winner name sizing (short names big, long names contained) ===== */
+/* vC1 reserved padding-right was for the old "floating trash" layout; v6 uses a grid so remove it */
+.roundTitle{ padding-right:0 !important; }
+
+/* Winner name: capped, 2-line clamp, and auto-sized via JS vars */
+.rWinnerOnly .rWinner{
+  font-size: clamp(24px, var(--winnerFs, 34px), 42px);
+  line-height:1.02;
+  letter-spacing:0.10px;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:normal;
+  word-break:break-word;
+}
+
+@container (max-width:520px){
+  .rWinnerOnly .rWinner{
+    font-size: clamp(20px, var(--winnerFsM, 28px), 36px);
+    letter-spacing:0.05px;
+  }
+}
+
 </style>
 </head>
 
@@ -3484,6 +3511,41 @@ applyTitleTracking();
 (function(){
   const target = document.querySelector('#roundList') || document.querySelector('.roundList') || document.body;
   const obs = new MutationObserver(()=>applyTitleTracking());
+  obs.observe(target, {childList:true, subtree:true});
+})();
+
+
+
+
+// ===== PATCH v6.2: Auto-size winner name for rWinnerOnly (short names big, long names contained) =====
+function applyWinnerSizing(root=document){
+  root.querySelectorAll('.rWinnerOnly .rWinner').forEach(el=>{
+    const name = (el.textContent || '').trim();
+    const len = Array.from(name).length;
+    // Another 2 steps smaller: keep short names punchy, keep long names contained
+    let fs = 34;   // desktop-ish
+    let fsm = 28;  // mobile-ish
+
+    if(len <= 1){ fs = 44; fsm = 36; }
+    else if(len === 2){ fs = 40; fsm = 34; }
+    else if(len === 3){ fs = 36; fsm = 30; }
+    else if(len === 4){ fs = 34; fsm = 28; }
+    else if(len === 5){ fs = 32; fsm = 26; }
+    else if(len === 6){ fs = 30; fsm = 24; }
+    else if(len <= 9){ fs = 26; fsm = 22; }
+    else { fs = 24; fsm = 20; }
+    el.style.setProperty('--winnerFs', `${fs}px`);
+    el.style.setProperty('--winnerFsM', `${fsm}px`);
+  });
+}
+
+// Run once
+applyWinnerSizing();
+
+// Observe round list changes so it always applies after re-render
+(function(){
+  const target = document.querySelector('#roundList') || document.querySelector('.roundList') || document.body;
+  const obs = new MutationObserver(()=>applyWinnerSizing());
   obs.observe(target, {childList:true, subtree:true});
 })();
 
