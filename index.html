@@ -1781,12 +1781,411 @@ input{
   .roundTitle{ padding-right:108px !important; }
 }
 
+
+
+/* ===== Mobile Preview Mode (Desktop) ===== */
+/* Let mobile rules depend on container width so we can "preview" mobile on desktop */
+.app{ container-type:inline-size; }
+
+.appHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.appHeader h1{ margin:8px 0 6px; }
+
+.previewBtn{
+  height:40px !important;
+  min-height:40px !important;
+  line-height:40px !important;
+  border-radius:999px !important;
+  padding:0 14px !important;
+  font-size:13px !important;
+  font-weight:900 !important;
+  opacity:.85;
+  white-space:nowrap;
+}
+.previewBtn:hover{ filter:brightness(1.06); }
+.previewBtn:active{ transform: translateY(1px); }
+
+/* Hide the toggle on real phones (no need) */
+@media (max-width:520px){
+  .previewBtn{ display:none !important; }
+}
+
+/* Turn on "mobile width" on desktop */
+body.mobile-preview .app{
+  max-width:420px !important;
+}
+
+/* ===== Mobile rules as container queries (so desktop preview matches phone) ===== */
+@container (max-width:520px){
+      .card{ padding:20px; }
+      .namesHeader{
+        grid-template-columns:1fr;
+        gap:12px;
+        align-items:stretch;
+      }
+      #namesRow.namesGrid{
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+        gap:12px !important;
+      }
+      #resetBtn{ width:100%; justify-self:stretch; }
+    }
+
+@container (max-width:520px){
+
+  /* Second card: allow wrapping into a clean grid */
+  .row.formRow{
+    flex-wrap:wrap !important;
+    gap:12px !important;
+    align-items:flex-end !important;
+  }
+
+  /* 2-column grid for controls */
+  .row.formRow > div{
+    flex:1 1 calc(50% - 12px) !important;
+    min-width:0 !important;
+  }
+
+  /* Make selects/stepper fill their cells */
+  #dealerSel, #winnerSel, #typeSel{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+  }
+  .stepper-water{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+  }
+
+  /* Record button: full-width last row (still icon-only) */
+  .row.formRow > div:last-child{
+    flex:1 1 100% !important;
+    margin-left:0 !important;
+  }
+  #addRoundBtn{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+  }
+
+  /* Optional: slightly larger tap target feel */
+  button, select, input{
+    height:46px !important;
+    line-height:46px !important;
+  }
+  .stepper-water button{
+    height:46px !important;
+  }
+  .stepper-water #waterInput{
+    height:46px !important;
+    line-height:46px !important;
+  }
+}
+
+@container (max-width:520px){
+  .roundLinesDesktop{
+    display:none !important;
+  }
+  .roundCard{
+    padding:22px 22px !important;
+    border-radius:34px !important;
+  }
+}
+
+@container (max-width:520px){
+
+  /* Header layout: keep tools centered on the card's main axis */
+  .roundHeader{
+    align-items:center !important;
+  }
+  .roundTitle{
+    min-width:0 !important;
+  }
+
+  /* 1) Youjin badge -> octagon icon only (no text) */
+  .youBadge{
+    padding:0 !important;
+    width:30px !important;
+    height:30px !important;
+    border-radius:10px !important;
+    border:1px solid rgba(255, 210, 64, 0.35) !important;
+    background: rgba(255, 210, 64, 0.10) !important;
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:0 !important;
+    font-size:0 !important; /* hide text width */
+    line-height:0 !important;
+    white-space:nowrap !important;
+    vertical-align:middle !important;
+  }
+  .youBadge .youDot{ display:none !important; }
+
+  .youBadge::before{
+    content:"";
+    width:18px;
+    height:18px;
+    display:block;
+    background:#FFD240;
+    clip-path: polygon(
+      30% 0%,
+      70% 0%,
+      100% 30%,
+      100% 70%,
+      70% 100%,
+      30% 100%,
+      0% 70%,
+      0% 30%
+    );
+  }
+
+  /* 2) Trash button bigger + centered */
+  .roundDelBtn{
+    width:56px !important;
+    height:56px !important;
+    border-radius:16px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    align-self:center !important;
+    flex:0 0 auto !important;
+  }
+  .roundDelBtn svg{
+    width:26px !important;
+    height:26px !important;
+  }
+}
+
+@container (max-width:520px){
+
+  /* Youjin: remove container visuals, keep only octagon */
+  .youBadge{
+    width:auto !important;
+    height:auto !important;
+    padding:0 !important;
+    border:none !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    border-radius:0 !important;
+    font-size:0 !important;
+    line-height:0 !important;
+  }
+  .youBadge span{ display:none !important; }
+  .youBadge .youDot{ display:none !important; }
+
+  .youBadge::before{
+    width:22px !important;
+    height:22px !important;
+    background:#FFD240 !important;
+  }
+
+  /* Trash: bigger button + bigger icon */
+  .roundDelBtn{
+    width:64px !important;
+    height:64px !important;
+    border-radius:18px !important;
+  }
+  .roundDelBtn svg{
+    width:30px !important;
+    height:30px !important;
+  }
+}
+
+@container (max-width:520px){
+  .roundDelBtn{
+    width:88px !important;
+    height:88px !important;
+    border-radius:24px !important;
+  }
+  .roundDelBtn svg{
+    width:42px !important;
+    height:42px !important;
+  }
+}
+
+@container (max-width:520px){
+  .roundDelBtn{
+    width:88px !important;
+    height:88px !important;
+    border-radius:24px !important;
+  }
+  .roundDelBtn svg{
+    width:42px !important;
+    height:42px !important;
+  }
+}
+
+@container (max-width:520px){
+  .roundDelBtn{ right:18px !important; }
+}
+
+@container (max-width:520px){
+  /* Trash: a bit smaller + border thinner */
+  .roundDelBtn{
+    width:72px !important;
+    height:72px !important;
+    border-radius:22px !important;
+    border-width:0px !important; /* we'll set exact border below */
+  }
+  /* original border is 2px; make it 0 then reapply 0? better: set 1px */
+  .roundDelBtn{
+    border:1px solid rgba(255,255,255,.18) !important;
+  }
+  .roundDelBtn svg{
+    width:34px !important;
+    height:34px !important;
+  }
+
+  /* Main summary line: A - 0水 · 胡牌 (down 2 steps) */
+  .roundTitle .rMain{
+    font-size:28px !important;
+    gap:8px !important;
+  }
+
+  /* Sub line: 莊家xx/平家xx smaller */
+  .roundTitle .rSub{
+    font-size:16px !important;
+    margin-top:10px !important;
+  }
+}
+
+@container (max-width:520px){
+  table{ table-layout:fixed !important; }
+  th,td{ overflow:hidden; text-overflow:ellipsis; }
+  th:first-child, td:first-child{
+    width:72px !important;
+    min-width:72px !important;
+    white-space:nowrap !important;
+  }
+}
+
+@container (max-width:520px){
+  .roundTitle .rMain{
+    line-height: 1.08 !important;
+    letter-spacing: .2px !important;
+  }
+  .roundTitle .rSub{
+    line-height: 1.15 !important;
+  }
+}
+
+@container (max-width:520px){
+  .roundDelBtn{
+    width:58px !important;
+    height:58px !important;
+    border-radius:16px !important;
+    border-width:1px !important;
+  }
+  .roundDelBtn svg{
+    width:28px !important;
+    height:28px !important;
+  }
+}
+
+@container (max-width:520px){
+  .roundTitle .rMain{
+    font-size:clamp(24px, 6.2vw, 26px) !important; /* down a touch, adaptive */
+    line-height:1.10 !important;
+    letter-spacing:0.15px !important;
+    gap:8px !important;
+    row-gap:6px !important;
+  }
+
+  /* Meta slightly smaller than name */
+  .roundTitle .rMain .rWater,
+  .roundTitle .rMain .rType{
+    font-size:.92em !important;
+    font-weight:700 !important;
+  }
+
+  /* Dots/seps slightly smaller */
+  .roundTitle .rMain .rSep,
+  .roundTitle .rMain .rDot{
+    font-size:.90em !important;
+  }
+
+  /* Smart wrap: if name takes space, meta can go next line without feeling loose */
+  .roundTitle .rMain .rWinner{
+    max-width:100%;
+  }
+
+  /* Sub info smaller + tighter */
+  .roundTitle .rSub{
+    font-size:15px !important;
+    line-height:1.12 !important;
+    margin-top:10px !important;
+  }
+}
+
+@container (max-width:520px){
+  .roundTitle .rMain{
+    font-size:clamp(22px, 5.8vw, 24px) !important; /* smaller by ~1 step */
+    line-height:1.08 !important;
+    gap:6px !important;
+    row-gap:6px !important;
+  }
+
+  /* Trash frame smaller */
+  .roundDelBtn{
+    width:54px !important;
+    height:54px !important;
+    border-radius:14px !important;
+    border:1px solid rgba(255,255,255,.14) !important;
+  }
+  .roundDelBtn svg{
+    width:26px !important;
+    height:26px !important;
+  }
+}
+
+@container (max-width:520px){
+  #namesRow.namesGrid{
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap:12px !important;
+  }
+}
+
+@container (max-width:520px){
+  .totalsGrid{ grid-template-columns: repeat(2, minmax(0, 1fr)); gap:12px; }
+}
+
+@container (max-width:520px){
+  .settleGrid{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap:12px;
+  }
+}
+
+@container (max-width:520px){
+  .settleName{
+    /* 手機：名字可能很長，允許換行並自動縮字 */
+    white-space:normal;
+    line-height:1.1;
+    font-size: clamp(13px, 4.2vw, 18px);
+  }
+}
+
+@container (max-width:520px){
+  .settleTop{ align-items:flex-start; }
+}
+
+@container (max-width:520px){
+  .roundTitle{ padding-right:108px !important; }
+}
+
 </style>
 </head>
 
 <body>
   <div class="app">
+    <div class="appHeader">
     <h1>說吧!今天誰天胡🀄️</h1>
+    <button id="mobilePreviewBtn" class="previewBtn" type="button" aria-pressed="false" title="在桌機上預覽手機排版">📱手機預覽</button>
+  </div>
 
     <div class="card">
       <div class="namesHeader">
@@ -2186,7 +2585,7 @@ function setRoundLocked(isLocked, reasonText=""){
     const mul = streakMultiplier(s);
     const carry = Math.max(0, s - 1);
 
-    // 起莊（第一把/新一段）不顯示徽章；只有連莊才顯示：連1（2倍）、連2（4倍）...
+    // 起莊（第一把/新一段）不顯示徽章；只有連莊才顯示：連1、連2…
     if (carry === 0){
       el.style.display = "none";
       el.innerHTML = "";
@@ -2194,7 +2593,7 @@ function setRoundLocked(isLocked, reasonText=""){
     }
 
     el.style.display = "inline-flex";
-    el.innerHTML = `連${carry}<span class="streakMul">（${mul}倍）</span>`;
+    el.innerHTML = `連${carry}`;
   }
 
   function syncNextRoundUI(){
@@ -2504,8 +2903,8 @@ function settleTransfers(totals){
       const mul = r.multiplier || 1;
 
       const carry = Math.max(0, (r.dealerStreak || 1) - 1);
-// 起莊不顯示；只有連莊才顯示：連1（2倍）、連2（4倍）...
-const streakText = (carry > 0) ? `連${carry}（${mul}倍）` : "";
+// 起莊不顯示；只有連莊才顯示：連1、連2…
+const streakText = (carry > 0) ? `連${carry}` : "";
 
       let sub = "";
       if (r.winner === r.dealer){
@@ -2823,6 +3222,34 @@ applyTitleTracking();
   const target = document.querySelector('#roundList') || document.querySelector('.roundList') || document.body;
   const obs = new MutationObserver(()=>applyTitleTracking());
   obs.observe(target, {childList:true, subtree:true});
+})();
+
+
+// ===== Mobile preview toggle (desktop) =====
+(function(){
+  const KEY = "mahjong_mobile_preview";
+  const btn = document.getElementById("mobilePreviewBtn");
+  if(!btn) return;
+
+  function apply(on){
+    document.body.classList.toggle("mobile-preview", !!on);
+    btn.setAttribute("aria-pressed", on ? "true" : "false");
+    btn.textContent = on ? "🖥️桌機預覽" : "📱手機預覽";
+    try{ localStorage.setItem(KEY, on ? "1" : "0"); }catch(e){}
+    try{
+      requestAnimationFrame(function(){
+        if (typeof fitAllTotalsNames === "function") fitAllTotalsNames();
+      });
+    }catch(e){}
+  }
+
+  btn.addEventListener("click", function(){
+    apply(!document.body.classList.contains("mobile-preview"));
+  });
+
+  let saved = null;
+  try{ saved = localStorage.getItem(KEY); }catch(e){}
+  if(saved === "1") apply(true);
 })();
 
 </script>
