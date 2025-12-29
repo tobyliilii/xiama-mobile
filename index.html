@@ -932,6 +932,29 @@ input{
 .roundTitle .rWater{ font-weight:900; }
 .roundTitle .rDot{ opacity:.55; }
 .roundTitle .rType{ font-weight:900; }
+.roundTitle .rWinnerOnly{
+  margin-top:10px;
+  font-size:34px;
+  font-weight:900;
+  letter-spacing:.2px;
+  color: rgba(255,255,255,.96);
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:10px;
+}
+.roundTitle .rMeta{
+  margin-top:8px;
+  font-size:24px;
+  font-weight:900;
+  letter-spacing:.2px;
+  color: rgba(255,255,255,.90);
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:10px;
+}
+.roundTitle .rStar{ opacity:.55; font-weight:800; }
 
 .youBadge{
   display:inline-flex;
@@ -2457,13 +2480,14 @@ const streakText = (carry > 0) ? `連${carry}（${mul}倍）` : "";
                 <span class="rDealer">莊家:${escapeHtml(players[r.dealer])}</span>
                 ${streakText ? `<span class="streakMini">${streakText}</span>` : ""}
               </div>
-              <div class="rMain">
+              <div class="rWinnerOnly">
                 <span class="rWinner">${badgeIf(escapeHtml(players[r.winner]), youWho === r.winner)}</span>
-                <span class="rSep">-</span>
-                <span class="rWater">${r.water}水</span>
-                <span class="rDot">·</span>
-                <span class="rType">${escapeHtml(typeLabel(r.type))}</span>
                 ${hasYou ? '<span class="youBadge"><span class="youDot"></span>游金</span>' : ''}
+              </div>
+              <div class="rMeta">
+                <span class="rWater">${r.water}水</span>
+                <span class="rStar">＊</span>
+                <span class="rType">${escapeHtml(typeLabel(r.type))}</span>
               </div>
               <div class="rSub">${sub}</div>
             </div>
