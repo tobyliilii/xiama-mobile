@@ -2465,6 +2465,146 @@ body.mobile-preview .app{
   }
 }
 
+
+
+/* ===== THEME vNeonFrost: dark + warm neon + frosted (strong) =====
+   目標：背景帶橘紅霓虹氛圍；卡片更霧、更乾淨；彩色只“明顯”出現在連莊
+*/
+
+/* Warm neon background */
+:root{
+  --bg:#07080c;
+  --text:#f1f4fb;
+  --muted:rgba(241,244,251,.62);
+  --stroke:rgba(255,255,255,.10);
+  --tableLine:rgba(255,255,255,.08);
+}
+
+body::before{
+  /* push behind grain layer */
+  z-index:-2 !important;
+  background:
+    radial-gradient(1100px 720px at 86% 18%, rgba(255, 76, 45, .22), transparent 58%),
+    radial-gradient(980px 680px at 18% 88%, rgba(255, 170, 55, .14), transparent 60%),
+    radial-gradient(760px 520px at 12% 16%, rgba(255, 115, 55, .10), transparent 56%),
+    radial-gradient(1200px 900px at 50% 50%, rgba(255,255,255,.02), transparent 55%),
+    linear-gradient(180deg, rgba(0,0,0,.68), rgba(0,0,0,.80)),
+    var(--bg) !important;
+}
+
+/* Subtle grain for “frost” feel */
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:-1;
+  opacity:.07;
+  mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'>\
+<filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/></filter>\
+<rect width='140' height='140' filter='url(%23n)' opacity='.55'/>\
+</svg>");
+}
+
+/* Frosted glass cards (strong) */
+.card{
+  background: rgba(18, 18, 24, .60) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+  border:1px solid rgba(255,255,255,.12) !important;
+  box-shadow: 0 18px 60px rgba(0,0,0,.55) !important;
+}
+
+.roundCard{
+  background: rgba(18, 18, 24, .56) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+  border:1px solid rgba(255,255,255,.11) !important;
+  box-shadow: 0 16px 46px rgba(0,0,0,.48) !important;
+}
+
+/* Remove “gold border” for youjin round card — keep grey, let streak be the hero */
+.roundCard.isYoujin{
+  border:1px solid rgba(255,255,255,.12) !important;
+}
+
+/* Inputs / selects / segmented: cleaner, less neomorphic */
+input,select{
+  background: rgba(12, 12, 16, .55) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
+  border:1px solid rgba(255,255,255,.12) !important;
+  box-shadow:none !important;
+}
+
+/* Water input stays clean inside stepper */
+#waterInput{
+  background: transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+
+.stepper,
+.segmented{
+  background: rgba(12, 12, 16, .48) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
+  border:1px solid rgba(255,255,255,.12) !important;
+  box-shadow:none !important;
+}
+
+.stepper button{
+  background: rgba(255,255,255,.05) !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  box-shadow:none !important;
+}
+
+button{
+  background: rgba(255,255,255,.06) !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  box-shadow:none !important;
+}
+
+button:hover{ filter:brightness(1.05); }
+button:active{
+  transform: translateY(1px);
+  background: rgba(255,255,255,.05) !important;
+}
+
+/* CTA button: neutral (avoid blue accent); streak remains the only obvious color */
+#addRoundBtn{
+  background: rgba(255,255,255,.08) !important;
+  border-color: rgba(255,255,255,.18) !important;
+}
+
+/* Make any leftover “badge” neutral grey (in case legacy rendering still outputs it) */
+.badge{
+  background: rgba(255,255,255,.06) !important;
+  color: rgba(241,244,251,.68) !important;
+  border:none !important;
+  box-shadow:none !important;
+}
+
+/* Table hover slightly softer */
+tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
+
+/* Keep meta tags quiet */
+.metaTag{
+  background: rgba(255,255,255,.06) !important;
+  color: rgba(241,244,251,.55) !important;
+}
+
+/* Streak pill: keep gold but reduce the “ring” so it feels like premium neon */
+.streakMini{
+  box-shadow: 0 0 0 3px rgba(245,210,74,.08) !important;
+}
+
+/* In this theme, “danger” red is only for warnings, not used elsewhere */
+.warn{ color: rgba(255, 120, 95, .95) !important; }
+
+
 </style>
 </head>
 
