@@ -2632,6 +2632,198 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
 .warn{ color: rgba(255, 120, 95, .95) !important; }
 
 
+
+
+/* ===== Seat-map (玩家/莊) ===== */
+.seatTitleRow{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.seatTitle{ font-size:22px; letter-spacing:.2px; }
+
+.seatWrap{ position:relative; }
+
+.seatBoard{
+  position:relative;
+  border-radius:28px;
+  border:1px solid rgba(255,255,255,.10);
+  background:
+    radial-gradient(120% 160% at 18% 0%, rgba(255,255,255,.05), rgba(255,255,255,0) 55%),
+    linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)),
+    var(--surface);
+  box-shadow: var(--shadow-small);
+  padding:18px 18px 78px;
+  overflow:hidden;
+}
+
+.seatGrid{
+  display:grid;
+  grid-template-columns: 1fr auto 1fr;
+  grid-template-rows: auto auto auto;
+  grid-template-areas:
+    "top top top"
+    "left token right"
+    "bottom bottom bottom";
+  gap:16px 16px;
+  align-items:center;
+}
+
+.seatCard{
+  position:relative;
+  border-radius:24px;
+  border:1px solid rgba(255,255,255,.10);
+  background: var(--surface2);
+  box-shadow: var(--shadow-pressed);
+  min-height:98px;
+  padding:14px 14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  cursor:pointer;
+  user-select:none;
+}
+.seatCard:active{ transform: translateY(1px); }
+
+.seatCard .seatName{
+  font-weight:900;
+  letter-spacing:.2px;
+  font-size:30px;
+  line-height:1.08;
+  color: rgba(241,244,251,.98);
+  text-align:center;
+  white-space:normal;
+  word-break:break-all;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+.seatTop{ grid-area: top; justify-self:center; width:68%; max-width:320px; }
+.seatBottom{ grid-area: bottom; justify-self:center; width:68%; max-width:320px; }
+.seatLeft{ grid-area: left; }
+.seatRight{ grid-area: right; }
+
+@media (max-width:520px){
+  .seatBoard{ padding:16px 16px 74px; }
+  .seatCard{ min-height:92px; border-radius:22px; }
+  .seatCard .seatName{ font-size:26px; }
+  .seatTop, .seatBottom{ width:74%; }
+}
+
+.seatBadgeSlot{
+  position:absolute;
+  top:10px;
+  right:10px;
+  min-width:0;
+  min-height:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.seatCenter{
+  grid-area: token;
+  width:70px;
+  height:70px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+}
+
+.dealerChip{
+  width:46px;
+  height:46px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+  font-size:18px;
+  letter-spacing:.2px;
+  color: rgba(255,243,236,.98);
+  background: linear-gradient(180deg, rgba(255,152,120,.34), rgba(255,96,78,.14));
+  border:1px solid rgba(255,166,138,.52);
+  box-shadow: 0 14px 26px rgba(0,0,0,.38), 0 0 0 3px rgba(255,118,92,.10);
+  cursor:grab;
+  touch-action:none;
+}
+.dealerChip:active{ cursor:grabbing; }
+.dealerChip.is-docked{ width:38px; height:38px; font-size:16px; }
+.dealerChip.is-dragging{ cursor:grabbing; filter: drop-shadow(0 14px 20px rgba(0,0,0,.45)); }
+
+/* Drop-zone affordance (only when 未設莊) */
+.seatCard.is-dropZone{ border-color: rgba(255,166,138,.22); }
+.seatCard.is-dropTarget{ border-color: rgba(255,166,138,.62); box-shadow: 0 0 0 3px rgba(255,118,92,.12), var(--shadow-pressed); }
+
+/* Hand guide (only when 未設莊) */
+.dealerGuide{ position:absolute; left:50%; top:50%; transform: translate(-50%,-50%); pointer-events:none; opacity:0; }
+.dealerGuide.is-active{ opacity:1; }
+.dealerGuide .guideHand{ font-size:22px; filter: drop-shadow(0 10px 16px rgba(0,0,0,.5)); animation: dealerGuideMove 1.55s ease-in-out infinite; }
+@keyframes dealerGuideMove{
+  0%{ transform: translate(0,0) scale(.98); opacity:0; }
+  18%{ opacity:1; }
+  62%{ transform: translate(0,-112px) scale(1); opacity:1; }
+  100%{ transform: translate(0,-112px) scale(.96); opacity:0; }
+}
+
+/* Swap button (icon + tiny label) */
+.swapBtn{
+  position:absolute;
+  right:18px;
+  bottom:14px;
+  width:70px;
+  height:66px;
+  border-radius:18px;
+  background: rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.10);
+  box-shadow: var(--shadow-small);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+}
+.swapBtn svg{ opacity:.92; }
+.swapBtn:active{ box-shadow: var(--shadow-pressed); transform: translateY(1px); }
+.swapLabel{ font-size:11px; letter-spacing:.2px; color: rgba(241,244,251,.42); }
+
+/* Name modal */
+.nameModal{ position:fixed; inset:0; z-index:9999; display:none; }
+.nameModal.is-open{ display:block; }
+.nameModalOverlay{ position:absolute; inset:0; background: rgba(0,0,0,.48); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.nameModalCard{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform: translate(-50%,-50%);
+  width:min(420px, calc(100vw - 36px));
+  border-radius:26px;
+  border:1px solid rgba(255,255,255,.14);
+  background:
+    radial-gradient(120% 160% at 22% 0%, rgba(255,255,255,.06), rgba(255,255,255,0) 60%),
+    linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0)),
+    var(--surface);
+  box-shadow: 0 26px 70px rgba(0,0,0,.55);
+  padding:18px;
+}
+.nameModalTitle{ font-weight:900; font-size:16px; margin-bottom:12px; }
+.nameModalInput{
+  width:100%;
+  border-radius:18px;
+  padding:14px 14px;
+  background: var(--surface2);
+  border:1px solid rgba(255,255,255,.10);
+  box-shadow: var(--shadow-pressed);
+  color: rgba(241,244,251,.96);
+  font-size:16px;
+  outline:none;
+}
+.nameModalActions{ display:flex; justify-content:flex-end; gap:10px; margin-top:14px; }
+.nameModalBtn{ height:44px; padding:0 14px; border-radius:16px; border:1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.06); box-shadow: var(--shadow-small); }
+.nameModalBtn:active{ box-shadow: var(--shadow-pressed); transform: translateY(1px); }
+.nameModalBtn.primary{ background: rgba(255,118,92,.16); border-color: rgba(255,166,138,.36); }
+
+
 </style>
 </head>
 
@@ -2643,32 +2835,24 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
   </div>
 
     <div class="card">
-      <div class="namesHeader">
-        <div id="namesRow" class="namesGrid">
-          <div>
-            <label>玩家 1</label>
-            <input type="text" value="A" data-name="0">
-          </div>
-          <div>
-            <label>玩家 2</label>
-            <input type="text" value="B" data-name="1">
-          </div>
-          <div>
-            <label>玩家 3</label>
-            <input type="text" value="C" data-name="2">
-          </div>
-          <div>
-            <label>玩家 4</label>
-            <input type="text" value="D" data-name="3">
-          </div>
-        </div>
-        <button id="resetBtn" class="resetBtn">換人</button>
+      <div class="seatTitleRow">
+        <strong class="seatTitle">玩家/莊</strong>
+      </div>
+      <div class="seatWrap">
+        <div id="namesRow" class="seatBoard"></div>
+        <button id="resetBtn" class="swapBtn" type="button" aria-label="換人" title="換人">
+          <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" style="display:block">
+            <path fill="#ffffff" d="M12 5a7 7 0 0 1 6.5 4.4h-2.2a.9.9 0 0 0-.7 1.5l3.5 4a.9.9 0 0 0 1.4 0l3.5-4a.9.9 0 0 0-.7-1.5h-2.1A9 9 0 1 0 21 12h-2a7 7 0 1 1-7-7z"/>
+          </svg>
+          <span class="swapLabel">換人</span>
+        </button>
       </div>
     </div>
 
+
     <div class="card">
       <div class="row formRow">
-        <div>
+        <div class="dealerField sr-only" aria-hidden="true">
           <label>莊家</label>
           <select id="dealerSel">
             <option value="0">A</option>
@@ -2737,6 +2921,20 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
       <div id="totalsArea"></div>
       <div id="transfersArea" style="display:none"></div>
     </div>
+
+  <!-- Name editor modal (seat map) -->
+  <div id="nameModal" class="nameModal" aria-hidden="true">
+    <div class="nameModalOverlay" data-close="1"></div>
+    <div class="nameModalCard" role="dialog" aria-modal="true" aria-labelledby="nameModalTitle">
+      <div class="nameModalTitle" id="nameModalTitle">編輯玩家名稱</div>
+      <input id="nameModalInput" class="nameModalInput" type="text" inputmode="text" autocomplete="off" />
+      <div class="nameModalActions">
+        <button type="button" id="nameModalCancel" class="nameModalBtn ghost">取消</button>
+        <button type="button" id="nameModalOk" class="nameModalBtn primary">確定</button>
+      </div>
+    </div>
+  </div>
+
   </div>
 
 <script>
@@ -2954,6 +3152,10 @@ function setRoundLocked(isLocked, reasonText=""){
   let dealerManualOverride = false;
   let suppressDealerChange = false;
 
+  // 方案B：是否已『設莊』（未設莊時顯示引導）
+  let dealerAssigned = false;
+
+
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, (c)=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
   }
@@ -3080,23 +3282,248 @@ function setRoundLocked(isLocked, reasonText=""){
   }
 
 
+  
+  function formatSeatName(name){
+    const raw = String(name || "").trim();
+    if (!raw) return "—";
+    const chars = Array.from(raw);
+    if (chars.length <= 3) return escapeHtml(raw);
+    const a = chars.slice(0,3).join("");
+    const b = chars.slice(3).join("");
+    return escapeHtml(a) + "<br>" + escapeHtml(b);
+  }
+
+  function setDealerAssigned(v){
+    dealerAssigned = !!v;
+    try{ updateDealerGuide(); }catch(e){}
+    try{ updateDealerDropZones(); }catch(e){}
+  }
+
+  function updateDealerGuide(){
+    const guide = document.getElementById("dealerGuide");
+    if(!guide) return;
+    const on = (!dealerAssigned && !rounds.length);
+    guide.classList.toggle("is-active", !!on);
+  }
+
+  function updateDealerDropZones(){
+    const on = (!dealerAssigned && !rounds.length);
+    document.querySelectorAll(".seatCard[data-seat]").forEach(el=>{
+      el.classList.toggle("is-dropZone", !!on);
+    });
+  }
+
+  function renderDealerChip(){
+    const chip = document.getElementById("dealerChip");
+    if(!chip) return;
+
+    const center = document.getElementById("seatCenter");
+    const dealerSel = document.getElementById("dealerSel");
+
+    let target = center;
+    if (dealerAssigned || rounds.length){
+      const d = Number((dealerSel && dealerSel.value != null) ? dealerSel.value : 0);
+      target = document.querySelector(`.seatBadgeSlot[data-slot="${d}"]`) || center;
+    }
+
+    if (target && chip.parentElement !== target) target.appendChild(chip);
+    chip.classList.toggle("is-docked", target && target.classList.contains("seatBadgeSlot"));
+
+    updateDealerGuide();
+    updateDealerDropZones();
+  }
+
+  function initDealerChipDrag(){
+    const chip = document.getElementById("dealerChip");
+    if(!chip || chip.dataset.inited) return;
+    chip.dataset.inited = "1";
+
+    let dragging = false;
+    let drag = { originParent:null, originNext:null, offsetX:0, offsetY:0, hoverSeat:null };
+
+    function clearTargets(){
+      document.querySelectorAll(".seatCard.is-dropTarget").forEach(el=>el.classList.remove("is-dropTarget"));
+    }
+
+    function onMove(e){
+      if(!dragging) return;
+      chip.style.left = (e.clientX - drag.offsetX) + "px";
+      chip.style.top  = (e.clientY - drag.offsetY) + "px";
+
+      const el = document.elementFromPoint(e.clientX, e.clientY);
+      const seat = el && el.closest ? el.closest(".seatCard[data-seat]") : null;
+      if (seat !== drag.hoverSeat){
+        clearTargets();
+        drag.hoverSeat = seat;
+        if (drag.hoverSeat) drag.hoverSeat.classList.add("is-dropTarget");
+      }
+    }
+
+    function endDrag(e){
+      if(!dragging) return;
+      dragging = false;
+
+      clearTargets();
+      chip.classList.remove("is-dragging");
+
+      // restore positioning; renderDealerChip() will dock it
+      chip.style.position = "";
+      chip.style.left = "";
+      chip.style.top = "";
+      chip.style.zIndex = "";
+
+      const seat = drag.hoverSeat;
+      drag.hoverSeat = null;
+
+      if (seat && seat.dataset && seat.dataset.seat != null){
+        const idx = Number(seat.dataset.seat);
+        const dealerSel = document.getElementById("dealerSel");
+        if (dealerSel){
+          dealerSel.value = String(idx);
+          // 讓既有連莊邏輯接手
+          dealerSel.dispatchEvent(new Event("change", { bubbles:true }));
+        }
+        setDealerAssigned(true);
+      }
+
+      // 回到正確容器
+      renderDealerChip();
+    }
+
+    chip.addEventListener("pointerdown", (e)=>{
+      // iOS/Android：用 pointer drag，避免原生 DnD 不穩
+      e.preventDefault();
+      const rect = chip.getBoundingClientRect();
+
+      dragging = true;
+      drag.originParent = chip.parentElement;
+      drag.originNext = chip.nextSibling;
+      drag.offsetX = e.clientX - rect.left;
+      drag.offsetY = e.clientY - rect.top;
+      drag.hoverSeat = null;
+
+      chip.classList.add("is-dragging");
+      chip.style.position = "fixed";
+      chip.style.left = (e.clientX - drag.offsetX) + "px";
+      chip.style.top  = (e.clientY - drag.offsetY) + "px";
+      chip.style.zIndex = "9999";
+      document.body.appendChild(chip);
+
+      window.addEventListener("pointermove", onMove);
+      window.addEventListener("pointerup", (ev)=>{ window.removeEventListener("pointermove", onMove); endDrag(ev); }, { once:true });
+      window.addEventListener("pointercancel", (ev)=>{ window.removeEventListener("pointermove", onMove); endDrag(ev); }, { once:true });
+    });
+  }
+
+  function initNameModal(){
+    const modal = document.getElementById("nameModal");
+    if(!modal || modal.dataset.inited) return;
+    modal.dataset.inited = "1";
+
+    let editingIdx = null;
+
+    function open(idx){
+      editingIdx = idx;
+      const input = document.getElementById("nameModalInput");
+      if(input){
+        input.value = players[idx] || "";
+        setTimeout(()=>{ try{ input.focus(); input.select(); }catch(e){} }, 0);
+      }
+      modal.classList.add("is-open");
+      modal.setAttribute("aria-hidden", "false");
+    }
+
+    function close(){
+      modal.classList.remove("is-open");
+      modal.setAttribute("aria-hidden", "true");
+      editingIdx = null;
+    }
+
+    modal.addEventListener("click", (e)=>{
+      const t = e.target;
+      if (t && (t.dataset && t.dataset.close === "1")) close();
+    });
+    document.getElementById("nameModalCancel")?.addEventListener("click", close);
+
+    function commit(){
+      if (editingIdx == null) return close();
+      const input = document.getElementById("nameModalInput");
+      const v = (input ? input.value : "").trim();
+      players[editingIdx] = v || `玩家${editingIdx+1}`;
+      renderSelectors();
+      renderNames();
+      renderAll();
+      close();
+    }
+
+    document.getElementById("nameModalOk")?.addEventListener("click", commit);
+    document.getElementById("nameModalInput")?.addEventListener("keydown", (e)=>{
+      if(e.key === "Enter"){ e.preventDefault(); commit(); }
+      if(e.key === "Escape"){ e.preventDefault(); close(); }
+    });
+
+    window.__openNameModal = open;
+  }
+
   function renderNames(){
     if (!Array.isArray(players) || players.length !== 4) players = ["A","B","C","D"];
-    $("namesRow").innerHTML = players.map((p,i)=>`
-      <div>
-        <label>玩家 ${i+1}</label>
-        <input type="text" value="${escapeHtml(p)}" data-name="${i}">
-      </div>
-    `).join("");
+    const root = $("namesRow");
+    if(!root) return;
 
-    document.querySelectorAll("[data-name]").forEach(inp=>{
-      inp.addEventListener("input",(e)=>{
-        const i = Number(e.target.dataset.name);
-        players[i] = e.target.value || `玩家${i+1}`;
-        renderSelectors();
-        renderAll();
+    if(!root.dataset.inited){
+      root.dataset.inited = "1";
+      root.innerHTML = `
+        <div class="seatBoardInner">
+          <div class="seatGrid" id="seatGrid">
+            <button type="button" class="seatCard seatTop" data-seat="0" aria-label="玩家 1">
+              <div class="seatBadgeSlot" data-slot="0"></div>
+              <div class="seatName" id="seatName0"></div>
+            </button>
+            <button type="button" class="seatCard seatLeft" data-seat="1" aria-label="玩家 2">
+              <div class="seatBadgeSlot" data-slot="1"></div>
+              <div class="seatName" id="seatName1"></div>
+            </button>
+            <div class="seatCenter" id="seatCenter" aria-label="莊">
+              <button id="dealerChip" type="button" class="dealerChip" aria-label="拖曳莊籌碼到座位">莊</button>
+              <div id="dealerGuide" class="dealerGuide" aria-hidden="true"><div class="guideHand">☝︎</div></div>
+            </div>
+            <button type="button" class="seatCard seatRight" data-seat="2" aria-label="玩家 3">
+              <div class="seatBadgeSlot" data-slot="2"></div>
+              <div class="seatName" id="seatName2"></div>
+            </button>
+            <button type="button" class="seatCard seatBottom" data-seat="3" aria-label="玩家 4">
+              <div class="seatBadgeSlot" data-slot="3"></div>
+              <div class="seatName" id="seatName3"></div>
+            </button>
+          </div>
+        </div>
+      `;
+
+      // 點座位：編輯名字
+      root.querySelectorAll('.seatCard[data-seat]').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const idx = Number(btn.dataset.seat);
+          if (Number.isNaN(idx)) return;
+          if (typeof window.__openNameModal === 'function') window.__openNameModal(idx);
+        });
       });
-    });
+
+      initDealerChipDrag();
+      initNameModal();
+    }
+
+    // 更新顯示
+    for (let i=0; i<4; i++){
+      const el = document.getElementById(`seatName${i}`);
+      if (el) el.innerHTML = formatSeatName(players[i]);
+      const seatBtn = root.querySelector(`.seatCard[data-seat="${i}"]`);
+      if (seatBtn) seatBtn.setAttribute('aria-label', `玩家 ${i+1}：${players[i]}`);
+    }
+
+    // 初次：未記錄任何局 -> 視為尚未設莊
+    if (!rounds.length && !dealerAssigned) setDealerAssigned(false);
+
+    renderDealerChip();
   }
 
   function toggleYouUI(){
@@ -3256,6 +3683,9 @@ function setRoundLocked(isLocked, reasonText=""){
   const youSelected = ($("youSel") && $("youSel").value === "yes");
 
   rounds.push({ dealer, winner, type, water, youSelected });
+
+  // ✅ 第一次記錄：視為已設莊（即便使用預設值）
+  if (!dealerAssigned) setDealerAssigned(true);
 
   // 記錄後：回到自動同步「下一把莊家 + 連莊」
   dealerManualOverride = false;
@@ -3530,11 +3960,14 @@ function renderTotalsAndTransfers(){
     syncNextRoundUI();
     renderRoundList();
     renderTotalsAndTransfers();
+    try{ renderDealerChip(); }catch(e){}
   }
 
   function resetAll(){
   rounds = [];
   dealerManualOverride = false;
+  try{ setDealerAssigned(false); }catch(e){}
+  try{ setDealerAssigned(false); }catch(e){}
   renderSelectors();
 
   // ✅ 換人/重開：回到「胡牌」，解除單游/雙游的游金強制
@@ -3582,6 +4015,7 @@ function renderTotalsAndTransfers(){
   $("addRoundBtn").addEventListener("click", addRound);
   $("dealerSel").addEventListener("change", ()=>{
     if (suppressDealerChange) return;
+    try{ setDealerAssigned(true); }catch(e){}
 
     // 第一把：連莊固定 1（選誰當莊都算新一段）
     if (!rounds.length){
