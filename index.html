@@ -2189,6 +2189,91 @@ body.mobile-preview .app{
   .roundTitle{ padding-right:108px !important; }
 }
 
+
+
+/* ===== vUI-20251229: only 3 tweaks =====
+   1) 連莊膠囊改金色 + 放到紀錄卡右上（狀態列右側）
+   2) 取消游金 badge，改灰階 meta tag（不跟連莊膠囊搶）
+   3) 垃圾桶移到紀錄卡右下角 + 縮小兩個 size
+*/
+
+/* 1) rTop: left info + right streak */
+.roundTitle{ padding-right:0 !important; } /* no longer reserving space for trash */
+.roundTitle .rTop{
+  justify-content:space-between;
+  gap:10px;
+}
+.roundTitle .rTopLeft{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+  flex:1 1 auto;
+}
+.roundTitle .rTopRight{
+  display:flex;
+  align-items:center;
+  flex:0 0 auto;
+}
+.roundTitle .rTopRight .streakMini{ margin-left:0 !important; }
+
+/* 1) streak mini -> gold */
+.streakMini{
+  background: rgba(245,210,74,.12) !important;
+  color: rgba(255,255,255,.92) !important;
+  border:1px solid rgba(245,210,74,.28) !important;
+  box-shadow: 0 0 0 4px rgba(245,210,74,.08) !important;
+}
+
+/* 2) grey meta tag */
+.metaTag{
+  display:inline-flex;
+  align-items:center;
+  padding:2px 8px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.15px;
+  line-height:1.6;
+  color: rgba(231,238,252,.52);
+  background: rgba(231,238,252,.06);
+  border:1px solid rgba(231,238,252,.14);
+}
+.roundTitle .rMeta .metaTag{ margin-left:2px; }
+
+/* 3) trash -> bottom-right (layout row) + smaller */
+.roundActions{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:14px;
+}
+.roundDelBtn{
+  position:static !important;
+  inset:auto !important;
+  transform:none !important;
+  width:56px !important;
+  height:56px !important;
+  border-radius:16px !important;
+}
+.roundDelBtn svg{
+  width:26px !important;
+  height:26px !important;
+}
+
+/* mobile: down 2 sizes */
+@container (max-width:520px){
+  .roundActions{ margin-top:12px; }
+  .roundDelBtn{
+    width:48px !important;
+    height:48px !important;
+    border-radius:14px !important;
+  }
+  .roundDelBtn svg{
+    width:22px !important;
+    height:22px !important;
+  }
+}
+
 </style>
 </head>
 
@@ -2932,10 +3017,14 @@ const streakText = (carry > 0) ? `連${carry}` : "";
           <div class="roundHeader">
             <div class="roundTitle">
               <div class="rTop">
-                <span class="rIdx">${idx+1}.</span>
-                <span class="rDealer" title="${escapeHtml(players[r.dealer])}">莊家:${escapeHtml(players[r.dealer])}</span>
-                ${streakText ? `<span class="streakMini">${streakText}</span>` : ""}
-              </div>
+  <div class="rTopLeft">
+    <span class="rIdx">${idx+1}.</span>
+    <span class="rDealer" title="${escapeHtml(players[r.dealer])}">莊家:${escapeHtml(players[r.dealer])}</span>
+  </div>
+  <div class="rTopRight">
+    ${streakText ? `<span class="streakMini">${streakText}</span>` : ""}
+  </div>
+</div>
               <div class="rWinnerOnly">
                 <span class="rWinner">${escapeHtml(players[r.winner])}</span>
                 
@@ -2944,25 +3033,26 @@ const streakText = (carry > 0) ? `連${carry}` : "";
                 <span class="rWater">${r.water}水</span>
                 <span class="rStar">・</span>
                 <span class="rType">${escapeHtml(typeLabel(r.type))}</span>
-                ${(r.type==="danyou"||r.type==="shuangyou") ? '<span class="youBadge"><span class="youDot"></span>游金</span>' : ''}
+                ${(r.type==="danyou"||r.type==="shuangyou") ? '<span class="metaTag metaTag--youjin">游金</span>' : ''}
               </div>
               <div class="rSub">${sub}</div>
             </div>
-
-            <button class="roundDelBtn" onclick="removeRound(${idx})" aria-label="刪除本局" title="刪除本局">
-              <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style="display:block">
-  <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M4 7h16"/>
-    <path d="M10 3h4"/>
-    <path d="M6 7l1 14h10l1-14"/>
-    <path d="M10 11v6"/>
-    <path d="M14 11v6"/>
-  </g>
-</svg>
-            </button>
           </div>
 
           <div class="mono roundLines roundLinesDesktop">${lines}</div>
+          <div class="roundActions">
+            <button class="roundDelBtn" onclick="removeRound(${idx})" aria-label="刪除本局" title="刪除本局">
+                          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style="display:block">
+              <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 7h16"/>
+                <path d="M10 3h4"/>
+                <path d="M6 7l1 14h10l1-14"/>
+                <path d="M10 11v6"/>
+                <path d="M14 11v6"/>
+              </g>
+            </svg>
+                        </button>
+          </div>
         </div>
       `;
     }).join("");
