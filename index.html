@@ -2695,26 +2695,36 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
 .seatCard .seatName{
   font-weight:800;
   letter-spacing:.15px;
-  font-size: clamp(14px, 3.2vw, 16px);  /* smaller for mobile */
-  line-height: 1.14;
+  font-size: clamp(18px, 3.4vw, 22px);
+  line-height: 1.1;
   color: rgba(241,244,251,.98);
   text-align:center;
-  white-space:normal;
-  word-break:break-all;
+
+  /* keep the pill clean even with long names */
+  width:100%;
+  padding: 0 12px;
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:10px;
+  gap:8px;
+
+  white-space:nowrap;
+  word-break:keep-all;
 }
 
 .seatNameText{
-  display:-webkit-box;
-  -webkit-line-clamp:2;
-  -webkit-box-orient:vertical;
+  display:block;
+  min-width:0;
+  max-width: 100%;
   overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
 
-
+.seatCard.has-dealer .seatName{
+  padding-left: 32px;
+  padding-right: 32px;
+}
 .seatTop{ grid-column:2; grid-row:1; justify-self:center; }
 .seatLeft{ grid-column:1; grid-row:2; justify-self:center; }
 .seatRight{ grid-column:3; grid-row:2; justify-self:center; }
@@ -2724,12 +2734,11 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
   .seatBoard{
     padding:14px 14px 54px;
     --tokenSize: 62px;
-    --seatGap: 14px;
-    --seatMaxW: 200px;
-    --seatH: clamp(78px, 22vw, 108px);
+    --seatGap: 16px;
+    --seatMaxW: 220px;
+    --seatH: clamp(84px, 22vw, 116px);
   }
   .seatCard{ border-radius:20px; }
-  .seatCard .seatName{ font-size:22px; } /* -2 sizes */
   .seatBadgeSlot{ top:-10px; right:-10px; }
 }
 
@@ -2775,24 +2784,79 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
 }
 .dealerChip:active{ cursor:grabbing; }
 .dealerChip.is-docked{
-  width:auto;
-  height:auto;
-  min-height:unset;
+  position:absolute;
+  right:16px;
+  top:50%;
+  transform: translateY(-50%);
+  z-index:3;
+
+  width:10px;
+  height:10px;
+  border-radius:999px;
   padding:0;
-  border:none;
-  border-radius:0;
-  background:transparent;
-  box-shadow:none;
-  -webkit-appearance:none;
-  appearance:none;
-  font-size:.72em; /* about -2 sizes relative to seat name */
-  color: rgba(245,210,74,.92); /* soft gold */
-  letter-spacing:.18px;
-  line-height:1;
+  min-height:unset;
+
+  /* small gold dot */
+  background: radial-gradient(circle at 30% 30%,
+    rgba(255,245,190,.98),
+    rgba(245,210,74,.92) 55%,
+    rgba(170,120,0,.95) 100%);
+  border:1px solid rgba(255,214,102,.28);
+  box-shadow:
+    0 0 0 2px rgba(245,210,74,.10),
+    0 0 14px rgba(245,210,74,.32);
+
+  /* keep text for a11y, hide visually */
+  font-size:0;
+  color:transparent;
+  letter-spacing:0;
+  line-height:0;
+
   cursor:grab;
 }
-.dealerChip.is-dragging{ cursor:grabbing; filter: drop-shadow(0 14px 20px rgba(0,0,0,.45)); }
-
+.dealerChip.is-docked::before{
+  content:"";
+  position:absolute;
+  inset:-12px; /* larger hit target without taking space */
+}
+.dealerChip.is-docked::after{
+  content: attr(data-tip);
+  position:absolute;
+  right:-6px;
+  top:-12px;
+  transform: translateY(-100%);
+  padding:6px 10px;
+  border-radius:999px;
+  background: rgba(0,0,0,.55);
+  border:1px solid rgba(255,255,255,.10);
+  color: rgba(241,244,251,.92);
+  font-size:12px;
+  letter-spacing:.2px;
+  white-space:nowrap;
+  opacity:0;
+  pointer-events:none;
+  transition: opacity .12s ease, transform .12s ease;
+  box-shadow: 0 10px 20px rgba(0,0,0,.35);
+}
+.dealerChip.is-docked:hover::after,
+.dealerChip.is-docked:focus-visible::after{
+  opacity:1;
+  transform: translateY(calc(-100% - 4px));
+}
+.dealerChip.is-dragging{
+  cursor:grabbing;
+  filter: drop-shadow(0 14px 20px rgba(0,0,0,.45));
+  /* while dragging, always show the big chip so it feels touch-friendly */
+  width:46px;
+  height:46px;
+  border-radius:999px;
+  font-size:18px;
+  letter-spacing:.2px;
+  color: rgba(255,243,236,.98);
+  background: linear-gradient(180deg, rgba(255,152,120,.34), rgba(255,96,78,.14));
+  border:1px solid rgba(255,166,138,.52);
+  box-shadow: 0 14px 26px rgba(0,0,0,.38), 0 0 0 3px rgba(255,118,92,.10);
+}
 /* Drop-zone affordance (when 尚未設莊) */
 .seatCard.is-dropZone{ border-color: rgba(255,166,138,.22); }
 .seatCard.is-dropTarget{ border-color: rgba(255,166,138,.62); box-shadow: 0 0 0 3px rgba(255,118,92,.12), var(--shadow-pressed); }
@@ -3384,11 +3448,7 @@ function syncRecordLock(bustedIdx){
   function formatSeatName(name){
     const raw = String(name || "").trim();
     if (!raw) return "—";
-    const chars = Array.from(raw);
-    if (chars.length <= 3) return escapeHtml(raw);
-    const a = chars.slice(0,3).join("");
-    const b = chars.slice(3).join("");
-    return escapeHtml(a) + "<br>" + escapeHtml(b);
+    return escapeHtml(raw);
   }
 
   function setDealerAssigned(v){
@@ -3404,29 +3464,40 @@ try{ updateDealerDropZones(); }catch(e){}
   }
 
   function renderDealerChip(){
-    const chip = document.getElementById("dealerChip");
-    if(!chip) return;
+  const chip = document.getElementById("dealerChip");
+  if(!chip) return;
 
-    const center = document.getElementById("seatCenter");
-    const dealerSel = document.getElementById("dealerSel");
+  const center = document.getElementById("seatCenter");
+  const dealerSel = document.getElementById("dealerSel");
 
-    let target = center;
-    let docked = false;
-    if (dealerAssigned){
-      const d = Number((dealerSel && dealerSel.value != null) ? dealerSel.value : 0);
-      target = document.getElementById(`seatName${d}`) || center;
-      docked = (target !== center);
+  // reset "has-dealer" marker
+  document.querySelectorAll(".seatCard[data-seat]").forEach(el=>el.classList.remove("has-dealer"));
+
+  let target = center;
+  let docked = false;
+
+  if (dealerAssigned){
+    const d = Number((dealerSel && dealerSel.value != null) ? dealerSel.value : 0);
+    target = document.getElementById(`seatName${d}`) || center;
+    docked = (target !== center);
+
+    if (docked){
+      const seatBtn = document.querySelector(`.seatCard[data-seat="${d}"]`);
+      if (seatBtn) seatBtn.classList.add("has-dealer");
     }
-
-    if (target && chip.parentElement !== target) target.appendChild(chip);
-    chip.classList.toggle("is-docked", docked);
-    updateDealerDropZones();
   }
+
+  if (target && chip.parentElement !== target) target.appendChild(chip);
+  chip.classList.toggle("is-docked", docked);
+  updateDealerDropZones();
+}
 
   function initDealerChipDrag(){
     const chip = document.getElementById("dealerChip");
     if(!chip || chip.dataset.inited) return;
     chip.dataset.inited = "1";
+
+    chip.addEventListener("click", (e)=>{ e.stopPropagation(); });
 
     let dragging = false;
     let drag = { originParent:null, originNext:null, offsetX:0, offsetY:0, hoverSeat:null };
@@ -3501,6 +3572,8 @@ try{ updateDealerDropZones(); }catch(e){}
       const rect = chip.getBoundingClientRect();
 
       dragging = true;
+      chip.classList.remove("is-docked");
+      chip.textContent = "莊";
       drag.originParent = chip.parentElement;
       drag.originNext = chip.nextSibling;
       drag.offsetX = e.clientX - rect.left;
@@ -3583,33 +3656,40 @@ try{ updateDealerDropZones(); }catch(e){}
       root.innerHTML = `        <div class="seatBoardTitle">玩家/莊</div>
         <div class="seatBoardInner">
           <div class="seatGrid" id="seatGrid">
-            <button type="button" class="seatCard seatTop" data-seat="0" aria-label="玩家 1">
+            <div class="seatCard seatTop" role="button" tabindex="0" data-seat="0" aria-label="玩家 1">
               <div class="seatName" id="seatName0"><span class="seatNameText" id="seatNameText0"></span></div>
-            </button>
-            <button type="button" class="seatCard seatLeft" data-seat="1" aria-label="玩家 2">
-              <div class="seatName" id="seatName1"><span class="seatNameText" id="seatNameText1"></span></div>
-            </button>
-            <div class="seatCenter" id="seatCenter" aria-label="莊">
-              <button id="dealerChip" type="button" class="dealerChip" aria-label="拖曳莊籌碼到座位">莊</button>
             </div>
-            <button type="button" class="seatCard seatRight" data-seat="2" aria-label="玩家 3">
+            <div class="seatCard seatLeft" role="button" tabindex="0" data-seat="1" aria-label="玩家 2">
+              <div class="seatName" id="seatName1"><span class="seatNameText" id="seatNameText1"></span></div>
+            </div>
+            <div class="seatCenter" id="seatCenter" aria-label="莊">
+              <span id="dealerChip" class="dealerChip" role="button" tabindex="0" aria-label="莊（可拖曳設定）" title="莊" data-tip="莊">莊</span>
+            </div>
+            <div class="seatCard seatRight" role="button" tabindex="0" data-seat="2" aria-label="玩家 3">
               <div class="seatName" id="seatName2"><span class="seatNameText" id="seatNameText2"></span></div>
-            </button>
-            <button type="button" class="seatCard seatBottom" data-seat="3" aria-label="玩家 4">
+            </div>
+            <div class="seatCard seatBottom" role="button" tabindex="0" data-seat="3" aria-label="玩家 4">
               <div class="seatName" id="seatName3"><span class="seatNameText" id="seatNameText3"></span></div>
-            </button>
+            </div>
           </div>
         </div>
       `;
 
       // 點座位：編輯名字
       root.querySelectorAll('.seatCard[data-seat]').forEach(btn=>{
-        btn.addEventListener('click', ()=>{
-          const idx = Number(btn.dataset.seat);
-          if (Number.isNaN(idx)) return;
-          if (typeof window.__openNameModal === 'function') window.__openNameModal(idx);
-        });
-      });
+  const open = ()=>{
+    const idx = Number(btn.dataset.seat);
+    if (Number.isNaN(idx)) return;
+    if (typeof window.__openNameModal === 'function') window.__openNameModal(idx);
+  };
+  btn.addEventListener('click', open);
+  btn.addEventListener('keydown', (e)=>{
+    if (e.key === 'Enter' || e.key === ' '){
+      e.preventDefault();
+      open();
+    }
+  });
+});
 
       initDealerChipDrag();
       initNameModal();
