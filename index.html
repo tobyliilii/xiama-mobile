@@ -2662,7 +2662,7 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
 .seatGrid{
   position:relative;
   display:grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-template-rows: auto auto auto;
   width:100%;
   column-gap: var(--seatGap);
@@ -2674,6 +2674,7 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
 
 .seatCard{
   position:relative;
+  min-width:0;
   border-radius:22px;
   border:1px solid rgba(255,255,255,.10);
   background: var(--surface2);
@@ -2693,6 +2694,7 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
 .seatCard:active{ transform: translateY(1px); }
 
 .seatCard .seatName{
+  min-width:0;
   font-weight:800;
   letter-spacing:.15px;
   font-size: clamp(18px, 3.4vw, 22px);
