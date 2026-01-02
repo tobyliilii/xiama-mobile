@@ -2877,7 +2877,7 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
   height: clamp(84px, 17.5vw, 108px) !important;
   min-height: clamp(84px, 17.5vw, 108px) !important;
   padding: 0 !important;
-  border-radius: 34px !important;
+  border-radius: 12px !important;
   background: #0f1114 !important;
   border: 1px solid rgba(255,255,255,.10) !important;
   box-shadow: none !important;
@@ -3040,6 +3040,279 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
 
 .cardPlayerSetup .swapLabel{ font-size: 18px; }
 
+
+
+/* ===== Figma Form (Winner + Type/Water/Record) ===== */
+.cardFormFigma{ padding:0 !important; }
+.cardFormFigma .figmaForm{
+  width:354px;
+  margin:0 auto;
+  padding:16px 22px 20px 20px;
+}
+.cardFormFigma .figLabel{
+  width:100%;
+  font-size:12px !important;
+  line-height:14px !important;
+  font-weight:600 !important; /* semibold */
+  text-align:center !important;
+  margin:0 0 4px 0 !important;
+  color:rgba(231,238,252,.85);
+}
+.cardFormFigma .figLabelEmpty{ visibility:hidden; }
+
+.cardFormFigma .winnerGroup{
+  width:312px;
+  margin:0 0 16px 0;
+}
+.cardFormFigma .winnerGroup .figLabel{ width:312px; }
+
+.cardFormFigma select.figWinner{
+  width:312px !important;
+  height:45px !important;
+  min-height:45px !important;
+  border-radius:12px !important;
+  background:var(--surface2) !important;
+  border:0 !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.06), var(--shadow-pressed) !important;
+  padding:15px 0 16px 0 !important; /* center 16/14/15-ish */
+  font-size:16px !important;
+  font-weight:900 !important; /* black */
+  line-height:14px !important;
+  color:var(--text) !important;
+  text-align:center !important;
+  text-align-last:center !important;
+  -webkit-appearance:none !important;
+  appearance:none !important;
+  outline:none;
+}
+
+.cardFormFigma .lowerRow{
+  width:312px;
+  display:flex;
+  gap:0;
+}
+.cardFormFigma .field{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.cardFormFigma .typeField{ width:122px; margin-right:12px; }
+.cardFormFigma .waterField{ width:122px; margin-right:11px; }
+.cardFormFigma .recordField{ width:45px; }
+
+.cardFormFigma .typeWrap{
+  position:relative;
+  width:122px;
+  height:45px;
+}
+.cardFormFigma select.figType{
+  width:122px !important;
+  height:45px !important;
+  min-height:45px !important;
+  border-radius:12px !important;
+  background:var(--surface2) !important;
+  border:0 !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.06), var(--shadow-pressed) !important;
+  padding:13px 0 !important; /* top/bottom 13 */
+  font-size:16px !important;
+  font-weight:900 !important; /* black */
+  line-height:19px !important;
+  color:var(--text) !important;
+  text-align:center !important;
+  text-align-last:center !important;
+  -webkit-appearance:none !important;
+  appearance:none !important;
+  outline:none;
+}
+.cardFormFigma .typeArrow{
+  position:absolute;
+  width:8px;
+  height:8px;
+  right:10px;
+  top:19px;
+  color:rgba(231,238,252,.7);
+  pointer-events:none;
+}
+
+.cardFormFigma .waterWrap{
+  width:122px;
+  height:45px;
+  border-radius:12px;
+  background:var(--surface2);
+  border:0;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.06), var(--shadow-pressed);
+  position:relative;
+  overflow:hidden;
+}
+.cardFormFigma .waterBtn{
+  position:absolute;
+  top:0;
+  width:45px;
+  height:45px;
+  border:0 !important;
+  background:transparent !important;
+  padding:0 !important;
+  color:var(--text) !important;
+  font-size:16px !important;
+  font-weight:900 !important; /* black */
+  line-height:19px !important;
+  display:flex;
+  align-items:center;
+}
+.cardFormFigma .waterMinus{
+  left:0;
+  justify-content:flex-start;
+  padding-left:12px !important;
+}
+.cardFormFigma .waterPlus{
+  right:0;
+  justify-content:flex-end;
+  padding-right:12px !important;
+}
+.cardFormFigma .waterValue{
+  position:absolute;
+  top:13px;
+  left:56px; /* spec: left 56, right 57 (0 width ~9) */
+  height:19px;
+  line-height:19px;
+  font-size:16px;
+  font-weight:900;
+  color:var(--text);
+  pointer-events:none;
+}
+
+.cardFormFigma .recordBtnFigma{
+  width:45px !important;
+  height:45px !important;
+  min-height:45px !important;
+  border-radius:12px !important;
+  background:var(--surface2) !important;
+  border:0 !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.06), var(--shadow-pressed) !important;
+  padding:0 !important;
+  position:relative;
+}
+.cardFormFigma .recordBtnFigma .recordIcon{
+  position:absolute;
+  width:25px;
+  height:25px;
+  top:9px;
+  right:9px;
+}
+
+.cardFormFigma .recordBtnFigma:disabled,
+.cardFormFigma .waterBtn:disabled,
+.cardFormFigma select:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+
+/* ===== Figma Form v2 (Route A): align with player cards, no fill (stroke only) ===== */
+.cardFormFigma{
+  padding:16px 14px 20px !important; /* match first card top/side rhythm, keep bottom 20 */
+}
+.cardFormFigma .figmaForm{
+  width:100% !important;
+  max-width:520px !important; /* match playerGrid max-width for perfect alignment on wide screens */
+  margin:0 auto !important;
+  padding:0 4px !important; /* + card padding 14 = 18 inset, same as player cards */
+  box-sizing:border-box;
+}
+
+/* Winner row stretches */
+.cardFormFigma .winnerGroup{ width:100% !important; }
+.cardFormFigma .winnerGroup .figLabel{ width:100% !important; }
+.cardFormFigma select.figWinner{
+  width:100% !important;
+  background:transparent !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.07) !important;
+}
+
+/* Lower row becomes responsive: 1fr / 1fr / 45 with asymmetric gaps 12 & 11 */
+.cardFormFigma .lowerRow{
+  width:100% !important;
+  display:grid !important;
+  grid-template-columns: minmax(122px,1fr) 12px minmax(122px,1fr) 11px 45px;
+  align-items:end;
+  box-sizing:border-box;
+}
+.cardFormFigma .typeField{ grid-column:1; width:auto !important; margin:0 !important; }
+.cardFormFigma .waterField{ grid-column:3; width:auto !important; margin:0 !important; }
+.cardFormFigma .recordField{ grid-column:5; width:45px !important; margin:0 !important; }
+
+/* Type control fills its grid track */
+.cardFormFigma .typeWrap{ width:100% !important; }
+.cardFormFigma select.figType{
+  width:100% !important;
+  background:transparent !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.07) !important;
+}
+/* Arrow: keep spec (8x8) and right=10; y uses top 19/bottom 18 */
+.cardFormFigma .typeArrow{
+  left:auto !important;
+  right:10px !important;
+  top:19px !important;
+}
+
+/* Water: stroke only (no fill) + keep 45px geometry (prevents “跑掉”) */
+.cardFormFigma .waterWrap{
+  width:100% !important;
+  height:45px !important;
+  background:transparent !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.07) !important;
+  border-radius:12px !important;
+  position:relative !important;
+  overflow:hidden;
+  padding:0 !important;
+  display:block !important;
+  box-sizing:border-box;
+}
+.cardFormFigma .waterBtn{
+  position:absolute !important;
+  top:0 !important;
+  width:45px !important;
+  height:45px !important;
+  min-height:0 !important; /* override global 44px */
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  padding:0 !important;
+  color:var(--text) !important;
+  font-size:16px !important;
+  font-weight:900 !important; /* black */
+  line-height:19px !important;
+  display:flex !important;
+  align-items:center !important;
+}
+.cardFormFigma .waterMinus{
+  left:0 !important;
+  justify-content:flex-start !important;
+  padding-left:12px !important;
+}
+.cardFormFigma .waterPlus{
+  right:0 !important;
+  justify-content:flex-end !important;
+  padding-right:12px !important;
+}
+.cardFormFigma .waterValue{
+  position:absolute !important;
+  top:13px !important; /* (45 - 19) / 2 */
+  left:50% !important;
+  transform:translateX(-50%) !important;
+  height:19px !important;
+  line-height:19px !important;
+  font-size:16px !important;
+  font-weight:900 !important;
+  pointer-events:none;
+}
+
+/* Record button: stroke only */
+.cardFormFigma .recordBtnFigma{
+  background:transparent !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.07) !important;
+}
+
 </style>
 </head>
 
@@ -3062,8 +3335,8 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
       </div>
     </div>
 
-<div class="card">
-      <div class="row formRow">
+<div class="card cardFormFigma">
+      <div class="figmaForm" role="group" aria-label="記錄本局">
         <div class="dealerField sr-only" aria-hidden="true">
           <label>莊家</label>
           <select id="dealerSel">
@@ -3074,9 +3347,9 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
           </select>
         </div>
 
-        <div>
-          <label>贏家</label>
-          <select id="winnerSel">
+        <div class="winnerGroup">
+          <div class="figLabel">贏家</div>
+          <select id="winnerSel" class="figWinner">
             <option value="0">玩家1</option>
             <option value="1">玩家2</option>
             <option value="2">玩家3</option>
@@ -3084,9 +3357,11 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
           </select>
         </div>
 
-        <div>
-          <label>贏法</label>
-          <select id="typeSel">
+        <div class="lowerRow">
+          <div class="field typeField">
+            <div class="figLabel">贏法</div>
+            <div class="typeWrap">
+              <select id="typeSel" class="figType">
             
                         <option value="dao">胡牌</option>
                         <option value="zimo">自摸</option>
@@ -3095,30 +3370,39 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
                         <option value="tianhu">天胡</option>
 
           </select>
-        </div>
+              <svg class="typeArrow" viewBox="0 0 8 8" width="8" height="8" aria-hidden="true" focusable="false">
+                <path d="M1 3l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
 
-        <div>
-          <label>水</label>
-          <div class="stepper stepper-water">
-            <button type="button" id="waterMinus">−</button>
-            <input id="waterInput" type="number" value="0" min="0" max="12" inputmode="numeric" />
-            <button type="button" id="waterPlus">＋</button>
+          <div class="field waterField">
+            <div class="figLabel">水</div>
+            <div class="waterWrap">
+              <button type="button" id="waterMinus" class="waterBtn waterMinus" aria-label="減水">−</button>
+              <span id="waterDisplay" class="waterValue" aria-hidden="true">0</span>
+              <button type="button" id="waterPlus" class="waterBtn waterPlus" aria-label="加水">＋</button>
+              <input id="waterInput" class="sr-only" aria-hidden="true" tabindex="-1" type="number" value="0" min="0" max="12" inputmode="numeric" />
+            </div>
+          </div>
+
+          <div class="field recordField">
+            <div class="figLabel figLabelEmpty" aria-hidden="true">&nbsp;</div>
+            <button id="addRoundBtn" class="recordBtnFigma" aria-label="記錄本局" title="記錄本局">
+              <svg class="recordIcon" viewBox="0 0 24 24" width="25" height="25" aria-hidden="true" focusable="false">
+                <path fill="#ffffff" d="M3 21l6-2 12-12-5-5L4 14l-1 7z"/>
+              </svg>
+            </button>
           </div>
         </div>
-        <!-- v5.7: 游金由贏法自動判斷；UI 不顯示（仍保留隱藏 select 供邏輯使用） -->
+
         <select id="youSel" class="sr-only" aria-hidden="true" tabindex="-1">
           <option value="none" selected>無</option>
           <option value="yes">有</option>
         </select>
-<div>
-          <label>&nbsp;</label>
-          <button id="addRoundBtn" aria-label="記錄本局" title="記錄本局"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style="display:block;">
-  <!-- one-piece solid silhouette -->
-  <path fill="#ffffff" d="M3 21l6-2 12-12-5-5L4 14l-1 7z"/>
-</svg></button>
-        </div>
       </div>
     </div>
+
 
     <div class="card">
       <strong>本局紀錄</strong>
@@ -4000,6 +4284,10 @@ function syncRecordLock(bustedIdx){
   if (type === "tianhu") v = 0;
   if ((type === "danyou" || type === "shuangyou") && v < 1) v = 1;
   input.value = String(v);
+
+  // 同步水顯示（Figma UI）
+  const disp = $("waterDisplay");
+  if (disp) disp.textContent = String(v);
 
   // --- 單游/雙游：自動開啟游金 ---
   const isYouType = (type === "danyou" || type === "shuangyou");
