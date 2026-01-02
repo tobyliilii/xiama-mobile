@@ -2885,6 +2885,9 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
   align-items:center;
   justify-content:center;
   touch-action: manipulation;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 .playerCard:active,
 .playerCard.is-pressing{
@@ -2941,7 +2944,7 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
   outline: none !important;
 
   color: rgba(255,255,255,.95) !important;
-  font-size: 22px !important;
+  font-size: 18px !important;
   font-weight: 900 !important;
   letter-spacing: .5px !important;
   line-height: 1.05 !important;
@@ -3714,11 +3717,10 @@ function syncRecordLock(bustedIdx){
       if (e.key === "Escape"){ e.preventDefault(); finish(false); }
     });
     input.addEventListener("blur", ()=> finish(true), { once:true });
-
-    // Focus & select
-    setTimeout(()=>{
-      try{ input.focus({ preventScroll:true }); input.select(); }catch(e){}
-    }, 0);
+    // Focus (must be synchronous on iOS to open the keyboard)
+    try{ input.focus(); }catch(e){}
+    // Select text (can be async)
+    setTimeout(()=>{ try{ input.setSelectionRange(0, input.value.length); }catch(e){} }, 0);
   }
 
   function initNameModal(){
@@ -3780,22 +3782,22 @@ function syncRecordLock(bustedIdx){
       root.dataset.inited = "1";
       root.innerHTML = `
         <div class="playerGrid" id="playerGrid" aria-label="玩家">
-          <button type="button" class="playerCard" data-seat="0" aria-label="玩家 1">
+          <div class="playerCard" data-seat="0" role="button" tabindex="0" aria-label="玩家 1">
             <div class="playerMain" id="seatName0"></div>
             <div class="playerHint">（長按起莊）</div>
-          </button>
-          <button type="button" class="playerCard" data-seat="1" aria-label="玩家 2">
+          </div>
+          <div class="playerCard" data-seat="1" role="button" tabindex="0" aria-label="玩家 2">
             <div class="playerMain" id="seatName1"></div>
             <div class="playerHint">（長按起莊）</div>
-          </button>
-          <button type="button" class="playerCard" data-seat="2" aria-label="玩家 3">
+          </div>
+          <div class="playerCard" data-seat="2" role="button" tabindex="0" aria-label="玩家 3">
             <div class="playerMain" id="seatName2"></div>
             <div class="playerHint">（長按起莊）</div>
-          </button>
-          <button type="button" class="playerCard" data-seat="3" aria-label="玩家 4">
+          </div>
+          <div class="playerCard" data-seat="3" role="button" tabindex="0" aria-label="玩家 4">
             <div class="playerMain" id="seatName3"></div>
             <div class="playerHint">（長按起莊）</div>
-          </button>
+          </div>
         </div>
       `;
 
@@ -3839,15 +3841,24 @@ function syncRecordLock(bustedIdx){
         btn.addEventListener("pointercancel", cancel);
         btn.addEventListener("pointerleave", cancel);
 
-        btn.addEventListener("click", (e)=>{
-          if (btn.classList.contains("is-editing")) return;
-          if (btn.dataset.ignoreClick === "1"){
-            btn.dataset.ignoreClick = "0";
-            e.preventDefault();
-            e.stopPropagation();
+        btn.addEventListener\("click", \(e\)=>\{
+          if \(btn\.classList\.contains\("is-editing"\)\) return;
+          if \(btn\.dataset\.ignoreClick === "1"\)\{
+            btn\.dataset\.ignoreClick = "0";
+            e\.preventDefault\(\);
+            e\.stopPropagation\(\);
             return;
+          \}
+          startInlineNameEdit\(idx, btn\);
+        \}\);
+
+        // Keyboard accessibility (desktop)
+        btn.addEventListener("keydown", (e)=>{
+          if (btn.classList.contains("is-editing")) return;
+          if (e.key === "Enter" || e.key === " "){
+            e.preventDefault();
+            startInlineNameEdit(idx, btn);
           }
-          startInlineNameEdit(idx, btn);
         });
       });
 
