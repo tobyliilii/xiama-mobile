@@ -2878,7 +2878,7 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
   min-height: clamp(84px, 17.5vw, 108px) !important;
   padding: 0 !important;
   border-radius: 12px !important;
-  background: #0f1114 !important;
+  background: transparent !important;
   border: 1px solid rgba(255,255,255,.10) !important;
   box-shadow: none !important;
   display:flex;
@@ -2893,7 +2893,7 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
 .playerCard.is-pressing{
   transform: scale(.99);
   filter: brightness(.98);
-  background: var(--surface2) !important; /* match select/field */
+  background: transparent !important;
 }
 
 .playerMain{
@@ -3018,6 +3018,8 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
 .cardPlayerSetup{ padding: 16px 14px 14px; }
 #namesRow.seatBoard{ padding: 0 !important; }
 .cardPlayerSetup .playerGrid{ padding-left: 4px; padding-right: 4px; }
+/* pull the 2x2 grid slightly upward to match the Figma vertical rhythm */
+.cardUnifiedStack .cardPlayerSetup .playerGrid{ padding-top: 4px !important; }
 .cardPlayerSetup .swapBtn{
   position: static !important;
   left:auto !important;
@@ -3085,6 +3087,22 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
   appearance:none !important;
   outline:none;
 }
+
+.cardFormFigma .winnerWrap{
+  position:relative;
+  width:312px;
+  height:45px;
+}
+.cardFormFigma .winnerArrow{
+  position:absolute;
+  width:8px;
+  height:8px;
+  right:10px;
+  top:19px;
+  color:rgba(231,238,252,.7);
+  pointer-events:none;
+}
+
 
 .cardFormFigma .lowerRow{
   width:312px;
@@ -3222,6 +3240,8 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
 
 /* Winner row stretches */
 .cardFormFigma .winnerGroup{ width:100% !important; }
+.cardFormFigma .winnerWrap{ width:100% !important; height:45px !important; position:relative !important; }
+.cardFormFigma .winnerArrow{ left:auto !important; right:10px !important; top:19px !important; }
 .cardFormFigma .winnerGroup .figLabel{ width:100% !important; }
 .cardFormFigma select.figWinner{
   width:100% !important;
@@ -3313,6 +3333,130 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
   box-shadow: inset 0 0 0 1px rgba(255,255,255,.07) !important;
 }
 
+
+/* ===== v8: 玩家區標題 + 右上角重置工具 ===== */
+.cardPlayerSetup .playerHeader{
+  display:grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items:center;
+  padding:0 4px; /* 14(卡片) + 4 = 18 內距對齊 */
+  margin-bottom:16px;
+}
+.cardPlayerSetup .playerHeaderTitle{
+  font-size:12px;
+  line-height:14px;
+  font-weight:600; /* semibold */
+  color:rgba(231,238,252,.85);
+  letter-spacing:.2px;
+  justify-self:center;
+  text-align:center;
+}
+.cardPlayerSetup .resetIconBtn{
+  justify-self:end;
+  width:44px !important;
+  height:44px !important;
+  min-height:44px !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  opacity:.7;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  border-radius:12px; /* 只做點擊熱區，不畫框 */
+}
+.cardPlayerSetup .resetIconBtn svg{
+  width:23px;
+  height:23px;
+  display:block;
+}
+.cardPlayerSetup .resetIconBtn:hover{ opacity:.82; }
+.cardPlayerSetup .resetIconBtn:active{
+  transform: translateY(1px);
+  opacity:.9;
+}
+
+/* 玩家卡：完全透明，只留框線（跟第二欄一致） */
+.cardPlayerSetup .playerCard{
+  background:transparent !important;
+  border:0 !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.07) !important;
+}
+
+
+
+/* ===== Unified layout: two sections, one visual card ===== */
+.cardUnifiedStack{
+  padding:0 !important; /* let each section manage its own padding */
+}
+
+/* section header (left title + right tool icon) */
+.panelHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:0 4px; /* 14 + 4 = 18 inset alignment */
+  margin:0 0 16px 0;
+}
+
+.panelTitle{
+  font-size:18px;
+  line-height:1.1;
+  font-weight:900;
+  letter-spacing:.2px;
+  color:rgba(241,244,251,.98);
+}
+
+.panelIconBtn{
+  width:44px !important;
+  height:44px !important;
+  min-height:44px !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  border-radius:12px;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  color:rgba(231,238,252,.92);
+  transition:opacity .12s ease, transform .08s ease, filter .12s ease;
+}
+.panelIconBtn svg{ display:block; }
+.panelIconBtn--muted{ opacity:.55; }
+.panelIconBtn--primary{ opacity:.86; }
+.panelIconBtn:hover{ filter:brightness(1.06); opacity:.92; }
+.panelIconBtn--muted:hover{ opacity:.72; }
+.panelIconBtn:active{ transform: translateY(1px); }
+
+/* internal divider (looks like one card split into two) */
+.panelDivider{
+  height:1px;
+  background: rgba(255,255,255,.07);
+  margin:0 18px;
+}
+
+/* In unified mode, record button lives in header: lower row is only 2 fields */
+.cardUnifiedStack #addRoundBtn{
+  width:44px !important;
+  min-width:44px !important;
+  max-width:44px !important;
+  height:44px !important;
+  min-height:44px !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+
+.cardUnifiedStack .cardFormFigma .lowerRow{
+  grid-template-columns: minmax(122px,1fr) 12px minmax(122px,1fr) !important;
+}
+.cardUnifiedStack .cardFormFigma .typeField{ grid-column:1 !important; }
+.cardUnifiedStack .cardFormFigma .waterField{ grid-column:3 !important; }
+
 </style>
 </head>
 
@@ -3323,38 +3467,58 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
     <button id="mobilePreviewBtn" class="previewBtn" type="button" aria-pressed="false" title="在桌機上預覽手機排版">📱手機預覽</button>
   </div>
 
-    <div class="card cardPlayerSetup">
-      <div class="seatWrap">
+    
+    <div class="card cardUnifiedStack" aria-label="麻友與紀錄卡">
+      <div class="panelSection cardPlayerSetup">
+        <div class="panelHeader">
+          <div class="panelTitle">麻友們</div>
+          <button id="resetBtn" class="panelIconBtn panelIconBtn--muted" type="button" aria-label="重置麻友" title="重置麻友">
+            <svg viewBox="0 0 24 24" width="23" height="23" aria-hidden="true" focusable="false">
+              <path d="M20 12a8 8 0 1 1-2.6-5.8" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="20 4 20 8 16 8" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="seatWrap">
         <div id="namesRow" class="seatBoard"></div>
-        <button id="resetBtn" class="swapBtn" type="button" aria-label="重置" title="重置">
-          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-            <path fill="#ffffff" d="M12 5a7 7 0 0 1 6.5 4.4h-2.2a.9.9 0 0 0-.7 1.5l3.5 4a.9.9 0 0 0 1.4 0l3.5-4a.9.9 0 0 0-.7-1.5h-2.1A9 9 0 1 0 21 12h-2a7 7 0 1 1-7-7z"/>
-          </svg>
-          <span class="swapLabel">重置</span>
-        </button>
       </div>
-    </div>
+      </div>
 
-<div class="card cardFormFigma">
-      <div class="figmaForm" role="group" aria-label="記錄本局">
+      <div class="panelDivider" role="separator" aria-hidden="true"></div>
+
+      <div class="panelSection cardFormFigma">
+        <div class="panelHeader">
+          <div class="panelTitle">紀錄卡</div>
+          <button id="addRoundBtn" class="panelIconBtn panelIconBtn--primary" type="button" aria-label="記錄本局" title="記錄本局">
+            <svg viewBox="0 0 24 24" width="25" height="25" aria-hidden="true" focusable="false">
+              <path fill="currentColor" d="M3 21l6-2 12-12-5-5L4 14l-1 7z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="figmaForm" role="group" aria-label="記錄本局">
         <div class="dealerField sr-only" aria-hidden="true">
           <label>莊家</label>
           <select id="dealerSel">
-            <option value="0">玩家1</option>
-            <option value="1">玩家2</option>
-            <option value="2">玩家3</option>
-            <option value="3">玩家4</option>
+            <option value="0">麻友1</option>
+            <option value="1">麻友2</option>
+            <option value="2">麻友3</option>
+            <option value="3">麻友4</option>
           </select>
         </div>
 
         <div class="winnerGroup">
           <div class="figLabel">贏家</div>
-          <select id="winnerSel" class="figWinner">
-            <option value="0">玩家1</option>
-            <option value="1">玩家2</option>
-            <option value="2">玩家3</option>
-            <option value="3">玩家4</option>
-          </select>
+          <div class="winnerWrap">
+            <select id="winnerSel" class="figWinner">
+              <option value="0">麻友1</option>
+              <option value="1">麻友2</option>
+              <option value="2">麻友3</option>
+              <option value="3">麻友4</option>
+            </select>
+            <svg class="winnerArrow" viewBox="0 0 8 8" width="8" height="8" aria-hidden="true" focusable="false">
+              <path d="M1 3l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
         </div>
 
         <div class="lowerRow">
@@ -3386,14 +3550,7 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
             </div>
           </div>
 
-          <div class="field recordField">
-            <div class="figLabel figLabelEmpty" aria-hidden="true">&nbsp;</div>
-            <button id="addRoundBtn" class="recordBtnFigma" aria-label="記錄本局" title="記錄本局">
-              <svg class="recordIcon" viewBox="0 0 24 24" width="25" height="25" aria-hidden="true" focusable="false">
-                <path fill="#ffffff" d="M3 21l6-2 12-12-5-5L4 14l-1 7z"/>
-              </svg>
-            </button>
-          </div>
+          
         </div>
 
         <select id="youSel" class="sr-only" aria-hidden="true" tabindex="-1">
@@ -3401,10 +3558,10 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
           <option value="yes">有</option>
         </select>
       </div>
+      </div>
     </div>
 
-
-    <div class="card">
+<div class="card">
       <strong>本局紀錄</strong>
       <div id="roundList" style="margin-top:10px;"></div>
     </div>
@@ -3422,7 +3579,7 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
   <div id="nameModal" class="nameModal" aria-hidden="true">
     <div class="nameModalOverlay" data-close="1"></div>
     <div class="nameModalCard" role="dialog" aria-modal="true" aria-labelledby="nameModalTitle">
-      <div class="nameModalTitle" id="nameModalTitle">編輯玩家名稱</div>
+      <div class="nameModalTitle" id="nameModalTitle">編輯麻友名稱</div>
       <input id="nameModalInput" class="nameModalInput" type="text" inputmode="text" autocomplete="off" />
       <div class="nameModalActions">
         <button type="button" id="nameModalCancel" class="nameModalBtn ghost">取消</button>
@@ -3463,7 +3620,7 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
     }
   };
 
-  let players = ["玩家1","玩家2","玩家3","玩家4"];
+  let players = ["麻友1","麻友2","麻友3","麻友4"];
 
 // ===== Random "busted" taunts (when someone drops to 0 or below) =====
 // 只輸出「{name}輸掉XXXX」這種短句（不含「這局」）
@@ -3978,7 +4135,7 @@ function syncRecordLock(bustedIdx){
     input.spellcheck = false;
     input.className = "inlineNameInput";
     input.value = current;
-    input.setAttribute("aria-label", `編輯玩家${idx+1}名稱`);
+    input.setAttribute("aria-label", `編輯麻友${idx+1}名稱`);
 
     // Replace display with input
     main.innerHTML = "";
@@ -3992,7 +4149,7 @@ function syncRecordLock(bustedIdx){
       // restore
       const v = (input.value || "").trim();
       if (commit){
-        players[idx] = v || `玩家${idx+1}`;
+        players[idx] = v || `麻友${idx+1}`;
         renderSelectors();
       }
       // Clear editing state first, then re-render UI
@@ -4048,7 +4205,7 @@ function syncRecordLock(bustedIdx){
       if (editingIdx == null) return close();
       const input = document.getElementById("nameModalInput");
       const v = (input ? input.value : "").trim();
-      players[editingIdx] = v || `玩家${editingIdx+1}`;
+      players[editingIdx] = v || `麻友${editingIdx+1}`;
       renderSelectors();
       renderNames();
       renderAll();
@@ -4065,27 +4222,27 @@ function syncRecordLock(bustedIdx){
   }
 
   function renderNames(){
-    if (!Array.isArray(players) || players.length !== 4) players = ["玩家1","玩家2","玩家3","玩家4"];
+    if (!Array.isArray(players) || players.length !== 4) players = ["麻友1","麻友2","麻友3","麻友4"];
     const root = $("namesRow");
     if(!root) return;
 
     if(!root.dataset.inited){
       root.dataset.inited = "1";
       root.innerHTML = `
-        <div class="playerGrid" id="playerGrid" aria-label="玩家">
-          <div class="playerCard" data-seat="0" role="button" tabindex="0" aria-label="玩家 1">
+        <div class="playerGrid" id="playerGrid" aria-label="麻友">
+          <div class="playerCard" data-seat="0" role="button" tabindex="0" aria-label="麻友 1">
             <div class="playerMain" id="seatName0"></div>
             <div class="playerHint">（長按起莊）</div>
           </div>
-          <div class="playerCard" data-seat="1" role="button" tabindex="0" aria-label="玩家 2">
+          <div class="playerCard" data-seat="1" role="button" tabindex="0" aria-label="麻友 2">
             <div class="playerMain" id="seatName1"></div>
             <div class="playerHint">（長按起莊）</div>
           </div>
-          <div class="playerCard" data-seat="2" role="button" tabindex="0" aria-label="玩家 3">
+          <div class="playerCard" data-seat="2" role="button" tabindex="0" aria-label="麻友 3">
             <div class="playerMain" id="seatName2"></div>
             <div class="playerHint">（長按起莊）</div>
           </div>
-          <div class="playerCard" data-seat="3" role="button" tabindex="0" aria-label="玩家 4">
+          <div class="playerCard" data-seat="3" role="button" tabindex="0" aria-label="麻友 4">
             <div class="playerMain" id="seatName3"></div>
             <div class="playerHint">（長按起莊）</div>
           </div>
@@ -4164,7 +4321,7 @@ function syncRecordLock(bustedIdx){
         if (!editingThis) el.innerHTML = formatSeatName(players[i]);
       }
       const seatBtn = root.querySelector(`.playerCard[data-seat="${i}"]`);
-      if (seatBtn) seatBtn.setAttribute('aria-label', `玩家 ${i+1}：${players[i]}`);
+      if (seatBtn) seatBtn.setAttribute('aria-label', `麻友 ${i+1}：${players[i]}`);
     }
     // 莊家標記（選中才顯示）
     try{
@@ -4662,7 +4819,7 @@ function renderTotalsAndTransfers(){
     else if ($("youSel")) $("youSel").value = "none";
   }catch(e){}
 
-  // 起莊選擇回到 玩家1（但仍需重新起莊）
+  // 起莊選擇回到 麻友1（但仍需重新起莊）
   try{
     if ($("dealerSel")) $("dealerSel").value = "0";
   }catch(e){}
@@ -4695,7 +4852,7 @@ function renderTotalsAndTransfers(){
   $("waterInput").addEventListener("input", syncWaterByType);
   $("waterInput").addEventListener("blur", syncWaterByType);
 
-  $("resetBtn").addEventListener("click", resetAll);
+  $("resetBtn").addEventListener("click", ()=>{ if(confirm("確定要重置本局（含起莊狀態與所有紀錄）？")) resetAll(); });
   $("addRoundBtn").addEventListener("click", addRound);
   $("dealerSel").addEventListener("change", ()=>{
     if (suppressDealerChange) return;
