@@ -3416,10 +3416,10 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
 }
 
 .panelTitle{
-  font-size:18px;
-  line-height:1.1;
-  font-weight:900;
-  letter-spacing:.2px;
+  font-size:16px;
+  line-height:1.2;
+  font-weight:700;
+  letter-spacing:.1px;
   color:rgba(241,244,251,.98);
 }
 
@@ -3486,7 +3486,7 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
       <div class="panelSection cardPlayerSetup">
         <div class="panelHeader">
           <div class="panelTitle">麻友們</div>
-          <button id="resetBtn" class="panelIconBtn panelIconBtn--muted" type="button" aria-label="重置麻友" title="重置麻友">
+          <button id="resetBtn" class="panelIconBtn panelIconBtn--muted" type="button" aria-label="重置麻友名稱" title="重置麻友名稱">
             <svg viewBox="0 0 24 24" width="23" height="23" aria-hidden="true" focusable="false">
               <path d="M20 12a8 8 0 1 1-2.6-5.8" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
               <polyline points="20 4 20 8 16 8" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
@@ -4816,6 +4816,14 @@ function renderTotalsAndTransfers(){
     try{ renderDealerChip(); }catch(e){}
   }
 
+  function resetPlayersOnly(){
+  // Only reset player display names; keep dealer / rounds / records intact
+  players = ["麻友1","麻友2","麻友3","麻友4"];
+  try{ renderSelectors(); }catch(e){}
+  try{ renderNames(); }catch(e){}
+  try{ renderAll(); }catch(e){}
+}
+
   function resetAll(){
   rounds = [];
   dealerManualOverride = false;
@@ -4871,7 +4879,7 @@ function renderTotalsAndTransfers(){
   $("waterInput").addEventListener("input", syncWaterByType);
   $("waterInput").addEventListener("blur", syncWaterByType);
 
-  $("resetBtn").addEventListener("click", ()=>{ if(confirm("確定要重置本局（含起莊狀態與所有紀錄）？")) resetAll(); });
+  $("resetBtn").addEventListener("click", ()=>{ if(confirm("確定要重置麻友名稱？")) resetPlayersOnly(); });
   $("addRoundBtn").addEventListener("click", addRound);
   $("dealerSel").addEventListener("change", ()=>{
     if (suppressDealerChange) return;
