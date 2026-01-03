@@ -946,17 +946,17 @@ input{
 .roundTitle .rTop .streakMini{ flex:0 0 auto; }
 .roundTitle .rIdx{ margin-right:6px; color: rgba(255,255,255,.45); }
 .roundTitle .rMain{
-  margin-top:10px;
-  font-size:34px;
+  margin-top:0px;
+  font-size:24px;
   font-weight:900;
   letter-spacing:.2px;
   color: rgba(255,255,255,.96);
   display:flex;
   flex-wrap:wrap;
-  align-items:center;
+  align-items:baseline;
   gap:10px;
 }
-.roundTitle .rWinner{ font-weight:900; }
+.roundTitle .rWinner{ font-weight:900; font-size:inherit; }
 .roundTitle .rSep{ opacity:.55; font-weight:800; }
 .roundTitle .rWater{ font-weight:900; }
 .roundTitle .rDot{ opacity:.55; }
@@ -970,10 +970,10 @@ input{
 }
 
 .roundTitle .rWinner{
-  font-size:52px;
+  font-size:inherit;
   font-weight:900;
   letter-spacing:.2px;
-  line-height:1;
+  line-height:1.1;
   color: rgba(255,255,255,.96);
 }
 
@@ -2393,7 +2393,7 @@ body.mobile-preview .app{
 @container (max-width:520px){
   .roundTitle .rTop.rTop--header{ margin-bottom: 8px; }
   .roundTitle .rDealer{ font-size:13px; }
-  .roundTitle .rWinner{ font-size:44px; }
+  .roundTitle .rMain{ font-size:22px; }
   .roundTitle .rSummary{ font-size:16px; }
   .roundTitle .rMeta.rChips{ margin-top:12px !important; }
   .rChips .chip{ font-size:13px; padding:6px 11px; }
@@ -3462,6 +3462,44 @@ tbody tr:hover{ background: rgba(255,255,255,.025) !important; }
 }
 .cardUnifiedStack .cardFormFigma .typeField{ grid-column:1 !important; }
 .cardUnifiedStack .cardFormFigma .waterField{ grid-column:3 !important; }
+
+
+/* ===== PATCH v11: fix rMain spacing (remove auto margins on winner) ===== */
+.roundTitle .rMain{
+  font-size:24px !important;       /* keep main line consistent */
+  justify-content:flex-start !important;
+}
+.roundTitle .rMain .rWinner{
+  margin:0 !important;             /* prevent flex auto-margins pushing type to edges */
+}
+
+
+
+/* ===== PATCH v11.1: Round card main line unify sizes (winner + type = 24px) ===== */
+.rWinnerOnly .rMain{
+  font-size:24px !important;
+  line-height:1.10 !important;
+  letter-spacing:0.15px !important;
+}
+
+/* Ensure winner/type use identical sizing + weight */
+.rWinnerOnly .rMain .rWinner,
+.rWinnerOnly .rMain .rType,
+.rWinnerOnly .rMain .rSep{
+  font-size:1em !important;
+  font-weight:900 !important;
+}
+
+/* Remove the older auto-sizing / multi-line clamp on winner for this A-style layout */
+.rWinnerOnly .rMain .rWinner{
+  margin:0 !important;
+  display:inline !important;
+  -webkit-line-clamp:unset !important;
+  -webkit-box-orient:initial !important;
+  white-space:nowrap !important;
+}
+
+.rWinnerOnly .rMain .rType{ opacity:1 !important; }
 
 </style>
 </head>
@@ -4656,9 +4694,13 @@ const streakText = (carry > 0) ? `連${carry}` : "";
                 </div>
               </div>
               <div class="rWinnerOnly">
-                <span class="rWinner">${escapeHtml(players[r.winner])}</span>
-                <span class="rSummary">${r.water}水 · ${escapeHtml(typeLabel(r.type))}${sub ? ` · ${escapeHtml(sub)}` : ""}</span>
-              
+                <div class="rMain">
+                  <span class="rWinner">${escapeHtml(players[r.winner])}</span>
+                  <span class="rSep">·</span>
+                  <span class="rType">${escapeHtml(typeLabel(r.type))}</span>
+                </div>
+                <span class="rSummary">${r.water}水${sub ? ` · ${escapeHtml(sub)}` : ""}</span>
+
                 <div class="roundActions">
                             <button class="roundDelBtn" onclick="removeRound(${idx})" aria-label="刪除本局" title="刪除本局">
                                           <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style="display:block">
