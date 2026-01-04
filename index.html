@@ -3536,8 +3536,6 @@ input,select,.stepper,.segmented{
 .topTwoCols > .card{ margin:0 !important; width:100%; }
 .cardPanel{ padding:0 !important; }
 
-}
-
 /* vTighten: titles closer to the card frame */
 .panelHeader{
   padding:0 2px !important; /* closer to the border */
@@ -3575,6 +3573,52 @@ input,select,.stepper,.segmented{
   backdrop-filter: blur(16px) saturate(165%) !important;
 }
 
+
+/* ===== vAppleTightenMore: 麻友們/紀錄卡更貼近卡片邊框（減少留白） ===== */
+.topTwoCols{ gap:10px !important; margin:12px 0 !important; }
+
+/* 標題區更貼近外框、上下更緊 */
+.panelHeader{
+  padding:0 1px !important;
+  margin:0 0 10px 0 !important;
+}
+
+/* 麻友們：縮小內距、縮小底部空白、格子更緊 */
+.cardPlayerSetup{ padding:10px 10px 10px !important; }
+.cardPlayerSetup .seatBoard{ padding:0 0 10px !important; }
+.cardPlayerSetup .playerGrid{
+  padding:6px 2px 0 !important;
+  gap:10px 10px !important;
+}
+
+/* 紀錄卡：縮小內距、標籤/欄位間距更緊 */
+.cardFormFigma{ padding:10px 10px 14px !important; }
+.cardFormFigma .figmaForm{ padding:0 2px !important; }
+.cardFormFigma .figLabel{ margin:0 0 3px 0 !important; }
+.cardFormFigma .winnerGroup{ margin:0 0 12px 0 !important; }
+
+
+
+
+/* ===== vAppleRaiseContent: 兩欄內容往上提（標題不動） ===== */
+/* 麻友們：四個框更靠近標題，避免整坨往下沉 */
+.cardPlayerSetup .seatWrap{ margin-top:-12px !important; }
+.cardPlayerSetup .playerGrid{ padding-top:4px !important; padding-bottom:0 !important; }
+.cardPlayerSetup{ padding-bottom:8px !important; }
+
+/* 紀錄卡：整組表單往上提，label/欄位一起上移 */
+.cardFormFigma .figmaForm{ margin-top:-12px !important; padding-top:8px !important; }
+.cardFormFigma .winnerGroup{ margin:0 0 10px 0 !important; }
+
+
+
+
+/* ===== vAppleBreathBottom: 底部留呼吸空間（比上方更鬆） ===== */
+.cardPlayerSetup{ padding-bottom:18px !important; }
+.cardPlayerSetup .playerGrid{ padding-bottom:10px !important; }
+
+.cardFormFigma{ padding-bottom:24px !important; }
+.cardFormFigma .figmaForm{ padding-bottom:12px !important; }
 </style>
 </head>
 
