@@ -169,19 +169,6 @@
       background:rgba(255,255,255,.02);
     }
 
-    /* primary CTA (記錄本局) */
-    #addRoundBtn{
-  width:92px !important;
-  min-width:92px !important;
-  max-width:92px !important;
-
-  width:80px;
-  min-width:80px;
-      background: linear-gradient(180deg, rgba(124,176,255,.24), rgba(78,123,255,.18)), var(--surface);
-      border-color: rgba(78,123,255,.35);
-    
-}
-
     /* Tables: flat, clean */
     table{ width:100%; border-collapse:collapse; margin-top:12px; }
     th,td{
@@ -3536,6 +3523,58 @@ input,select,.stepper,.segmented{
   -webkit-backdrop-filter: blur(14px) saturate(125%) !important;
   backdrop-filter: blur(14px) saturate(125%) !important;
 }
+
+
+/* ===== vAppleSplit: split 第1欄(麻友們) / 第2欄(紀錄卡) into two cards ===== */
+.topTwoCols{
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  gap:14px;
+  margin:14px 0;
+}
+.topTwoCols > .card{ margin:0 !important; width:100%; }
+.cardPanel{ padding:0 !important; }
+
+}
+
+/* vTighten: titles closer to the card frame */
+.panelHeader{
+  padding:0 2px !important; /* closer to the border */
+  margin:0 0 12px 0 !important;
+}
+.cardPlayerSetup{ padding:12px 12px 12px !important; }
+
+/* vFix: 「麻」上方寶蓋的點（字形被擠掉）— give it real line box */
+.cardFormFigma select.figWinner{
+  padding:13px 0 !important;
+  line-height:19px !important;
+}
+
+/* ===== vAppleGlass: iOS-like frosted glass ===== */
+:root{
+  --appleGlassBg: rgba(16, 22, 32, .56);
+  --appleGlassBorder: rgba(255,255,255,.18);
+  --appleGlassInner: rgba(255,255,255,.06);
+  --appleGlassShadow: 0 24px 60px rgba(0,0,0,.58);
+}
+.card, .roundCard{
+  -webkit-backdrop-filter: blur(22px) saturate(160%) !important;
+  backdrop-filter: blur(22px) saturate(160%) !important;
+  background:
+    radial-gradient(120% 180% at 0% 0%, rgba(255,255,255,.12), rgba(255,255,255,0) 55%),
+    linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02)),
+    var(--appleGlassBg) !important;
+  border:1px solid var(--appleGlassBorder) !important;
+  box-shadow: var(--appleGlassShadow), inset 0 1px 0 var(--appleGlassInner) !important;
+}
+
+/* Controls: a touch more “iOS” glass */
+input,select,.stepper,.segmented{
+  -webkit-backdrop-filter: blur(16px) saturate(165%) !important;
+  backdrop-filter: blur(16px) saturate(165%) !important;
+}
+
 </style>
 </head>
 
@@ -3547,98 +3586,99 @@ input,select,.stepper,.segmented{
   </div>
 
     
-    <div class="card cardUnifiedStack" aria-label="麻友與紀錄卡">
-      <div class="panelSection cardPlayerSetup">
-        <div class="panelHeader">
-          <div class="panelTitle">麻友們</div>
-          <button id="resetBtn" class="panelIconBtn panelIconBtn--muted" type="button" aria-label="重置麻友名稱" title="重置麻友名稱">
-            <svg viewBox="0 0 24 24" width="23" height="23" aria-hidden="true" focusable="false">
-              <path d="M20 12a8 8 0 1 1-2.6-5.8" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
-              <polyline points="20 4 20 8 16 8" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-        </div>
-        <div class="seatWrap">
-        <div id="namesRow" class="seatBoard"></div>
-      </div>
-      </div>
-
-      <div class="panelDivider" role="separator" aria-hidden="true"></div>
-
-      <div class="panelSection cardFormFigma">
-        <div class="panelHeader">
-          <div class="panelTitle">紀錄卡</div>
-          <button id="addRoundBtn" class="panelIconBtn panelIconBtn--primary" type="button" aria-label="記錄本局" title="記錄本局">
-            <svg viewBox="0 0 24 24" width="25" height="25" aria-hidden="true" focusable="false">
-              <path fill="currentColor" d="M3 21l6-2 12-12-5-5L4 14l-1 7z"/>
-            </svg>
-          </button>
-        </div>
-        <div class="figmaForm" role="group" aria-label="記錄本局">
-        <div class="dealerField sr-only" aria-hidden="true">
-          <label>莊家</label>
-          <select id="dealerSel">
-            <option value="0">麻友1</option>
-            <option value="1">麻友2</option>
-            <option value="2">麻友3</option>
-            <option value="3">麻友4</option>
-          </select>
-        </div>
-
-        <div class="winnerGroup">
-          <div class="figLabel">贏家</div>
-          <div class="winnerWrap">
-            <select id="winnerSel" class="figWinner">
-              <option value="0">麻友1</option>
-              <option value="1">麻友2</option>
-              <option value="2">麻友3</option>
-              <option value="3">麻友4</option>
-            </select>
-            <svg class="winnerArrow" viewBox="0 0 8 8" width="8" height="8" aria-hidden="true" focusable="false">
-              <path d="M1 3l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+    <div class="topTwoCols cardUnifiedStack" aria-label="麻友與紀錄卡">
+  <div class="card cardPanel" aria-label="麻友們">
+    <div class="panelSection cardPlayerSetup">
+            <div class="panelHeader">
+              <div class="panelTitle">麻友們</div>
+              <button id="resetBtn" class="panelIconBtn panelIconBtn--muted" type="button" aria-label="重置麻友名稱" title="重置麻友名稱">
+                <svg viewBox="0 0 24 24" width="23" height="23" aria-hidden="true" focusable="false">
+                  <path d="M20 12a8 8 0 1 1-2.6-5.8" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+                  <polyline points="20 4 20 8 16 8" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+            <div class="seatWrap">
+            <div id="namesRow" class="seatBoard"></div>
           </div>
-        </div>
+          </div>
+  </div>
+  <div class="card cardPanel" aria-label="紀錄卡">
+    <div class="panelSection cardFormFigma">
+            <div class="panelHeader">
+              <div class="panelTitle">紀錄卡</div>
+              <button id="addRoundBtn" class="panelIconBtn panelIconBtn--primary" type="button" aria-label="記錄本局" title="記錄本局">
+                <svg viewBox="0 0 24 24" width="25" height="25" aria-hidden="true" focusable="false">
+                  <path fill="currentColor" d="M3 21l6-2 12-12-5-5L4 14l-1 7z"/>
+                </svg>
+              </button>
+            </div>
+            <div class="figmaForm" role="group" aria-label="記錄本局">
+            <div class="dealerField sr-only" aria-hidden="true">
+              <label>莊家</label>
+              <select id="dealerSel">
+                <option value="0">麻友1</option>
+                <option value="1">麻友2</option>
+                <option value="2">麻友3</option>
+                <option value="3">麻友4</option>
+              </select>
+            </div>
 
-        <div class="lowerRow">
-          <div class="field typeField">
-            <div class="figLabel">贏法</div>
-            <div class="typeWrap">
-              <select id="typeSel" class="figType">
+            <div class="winnerGroup">
+              <div class="figLabel">贏家</div>
+              <div class="winnerWrap">
+                <select id="winnerSel" class="figWinner">
+                  <option value="0">麻友1</option>
+                  <option value="1">麻友2</option>
+                  <option value="2">麻友3</option>
+                  <option value="3">麻友4</option>
+                </select>
+                <svg class="winnerArrow" viewBox="0 0 8 8" width="8" height="8" aria-hidden="true" focusable="false">
+                  <path d="M1 3l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            </div>
+
+            <div class="lowerRow">
+              <div class="field typeField">
+                <div class="figLabel">贏法</div>
+                <div class="typeWrap">
+                  <select id="typeSel" class="figType">
             
-                        <option value="dao">胡牌</option>
-                        <option value="zimo">自摸</option>
-                        <option value="danyou">單游</option>
-                        <option value="shuangyou">雙游</option>
-                        <option value="tianhu">天胡</option>
+                            <option value="dao">胡牌</option>
+                            <option value="zimo">自摸</option>
+                            <option value="danyou">單游</option>
+                            <option value="shuangyou">雙游</option>
+                            <option value="tianhu">天胡</option>
 
-          </select>
-              <svg class="typeArrow" viewBox="0 0 8 8" width="8" height="8" aria-hidden="true" focusable="false">
-                <path d="M1 3l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-          </div>
+              </select>
+                  <svg class="typeArrow" viewBox="0 0 8 8" width="8" height="8" aria-hidden="true" focusable="false">
+                    <path d="M1 3l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+              </div>
 
-          <div class="field waterField">
-            <div class="figLabel">水</div>
-            <div class="waterWrap">
-              <button type="button" id="waterMinus" class="waterBtn waterMinus" aria-label="減水">−</button>
-              <span id="waterDisplay" class="waterValue" aria-hidden="true">0</span>
-              <button type="button" id="waterPlus" class="waterBtn waterPlus" aria-label="加水">＋</button>
-              <input id="waterInput" class="sr-only" aria-hidden="true" tabindex="-1" type="number" value="0" min="0" max="12" inputmode="numeric" />
-            </div>
-          </div>
+              <div class="field waterField">
+                <div class="figLabel">水</div>
+                <div class="waterWrap">
+                  <button type="button" id="waterMinus" class="waterBtn waterMinus" aria-label="減水">−</button>
+                  <span id="waterDisplay" class="waterValue" aria-hidden="true">0</span>
+                  <button type="button" id="waterPlus" class="waterBtn waterPlus" aria-label="加水">＋</button>
+                  <input id="waterInput" class="sr-only" aria-hidden="true" tabindex="-1" type="number" value="0" min="0" max="12" inputmode="numeric" />
+                </div>
+              </div>
 
           
-        </div>
+            </div>
 
-        <select id="youSel" class="sr-only" aria-hidden="true" tabindex="-1">
-          <option value="none" selected>無</option>
-          <option value="yes">有</option>
-        </select>
-      </div>
-      </div>
-    </div>
+            <select id="youSel" class="sr-only" aria-hidden="true" tabindex="-1">
+              <option value="none" selected>無</option>
+              <option value="yes">有</option>
+            </select>
+          </div>
+          </div>
+  </div>
+</div>
 
 <div class="card">
       <strong>本局紀錄</strong>
