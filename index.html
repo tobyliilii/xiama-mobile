@@ -3617,8 +3617,13 @@ input,select,.stepper,.segmented{
 .cardPlayerSetup{ padding-bottom:18px !important; }
 .cardPlayerSetup .playerGrid{ padding-bottom:10px !important; }
 
-.cardFormFigma{ padding-bottom:24px !important; }
-.cardFormFigma .figmaForm{ padding-bottom:12px !important; }
+.cardFormFigma{ padding-bottom:36px !important; }
+.cardFormFigma .figmaForm{ padding-bottom:16px !important; }
+
+/* ===== vAppleHeaderBreath: 紀錄卡標題離上框更遠（不影響表單位置） ===== */
+.cardFormFigma{ padding-top:16px !important; }
+.cardFormFigma .figmaForm{ margin-top:-18px !important; }
+
 
 /* ===== v6 CTA: move "記錄此局" into the form (below 贏法/水) and make it a full clickable glass field ===== */
 .cardFormFigma .recordCtaGroup{
@@ -3762,6 +3767,51 @@ input,select,.stepper,.segmented{
   letter-spacing:.2px !important;
 }
 
+
+/* ===== v11: Record card title breathing (top) + balance bottom ===== */
+.cardFormFigma{
+  padding:20px 10px 18px 10px !important; /* more top space for '紀錄卡', reduce bottom so it isn't heavier */
+}
+
+
+/* ===== v13: Match title inset between 「麻友們」與「紀錄卡」 (top/left spacing) ===== */
+.cardPanel .panelSection.cardFormFigma{
+  /* give the record panel the same inset as the player panel */
+  padding:12px 12px 12px !important;
+}
+
+/* keep the form centered and avoid horizontal overflow after adding section padding */
+.cardPanel .panelSection.cardFormFigma .figmaForm{
+  width:100% !important;
+  max-width:354px !important;
+  margin:0 auto !important;
+
+  /* compensate for the new outer inset so the inner fields don't get too narrow */
+  padding-left:8px !important;
+  padding-right:8px !important;
+}
+
+
+/* ===== v15: 紀錄卡標題/內容間距，與「麻友們」一致（上框距離 + 標題到第一排） ===== */
+.cardPanel[aria-label="紀錄卡"] .panelSection.cardFormFigma{
+  padding:16px 14px 16px !important; /* match .cardPlayerSetup */
+}
+.cardPanel[aria-label="紀錄卡"] .panelHeader{
+  margin-bottom:16px !important;
+}
+.cardPanel[aria-label="紀錄卡"] .figmaForm{
+  margin-top:4px !important;  /* 16(header) + 4 = players rhythm */
+  padding-left:4px !important;
+  padding-right:4px !important;
+}
+
+
+
+/* ===== v16: sync record title inset with players ===== */
+.cardPanel .panelSection.cardFormFigma{
+  /* match .cardPlayerSetup padding so the title isn't closer to the top edge */
+  padding:16px 14px 16px !important;
+}
 </style>
 </head>
 
